@@ -1,0 +1,9 @@
+# Goal
+int64 test_number
+float64 test_float
+float64 period
+---
+# Result
+int64 final_result
+---
+# Feeedback
