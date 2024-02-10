@@ -8,8 +8,8 @@
       "includePath": [
         "/opt/ros/humble/include/**",
         "/usr/include/**",
-        "/home/daegan/ros2_ws/install/astra_auto_interfaces/include/**",
-        "/home/daegan/ros2_ws/install/std_msgs/include/**"
+        "~/rover-Autonomy/ros2_ws/install/astra_auto_interfaces/include/**",
+        "~/rover-Autonomy/ros2_ws/install/std_msgs/include/**"
       ],
       "name": "ROS",
       "intelliSenseMode": "gcc-x64",
