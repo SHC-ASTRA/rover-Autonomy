@@ -6,9 +6,9 @@
         "limitSymbolsToIncludedHeaders": false
       },
       "includePath": [
-        "/home/daegan/ros2_ws/install/astra_auto_interfaces/include/**",
+        "~/rover-Autonomy/ros2_ws/install/astra_auto_interfaces/include/**",
         "/opt/ros/humble/include/**",
-        "/home/daegan/ros2_ws/src/actions_cpp/include/**",
+        "~/rover-Autonomy/ros2_ws/src/actions_cpp/include/**",
         "/usr/include/**"
       ],
       "name": "ROS",
