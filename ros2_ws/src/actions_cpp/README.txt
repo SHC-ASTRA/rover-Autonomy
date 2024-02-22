@@ -16,6 +16,8 @@ Version History
         Asked user for GPS input 
         Able to subscribe to IMU topic
         Sends more feedback to console on what mode you've selected
+    1.2
+        Loops GPS locating, until within 0.0000001 lat and long of target.
 
 Contents:
     directory: include

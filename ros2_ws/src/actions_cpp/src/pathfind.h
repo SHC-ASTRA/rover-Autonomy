@@ -1,7 +1,7 @@
 //***********************************************
 //rover-Autonomy Header file
 //Holds functions for various pathfinding
-//Last edited Feb 17, 2024
+//Last edited Feb 21, 2024
 //***********************************************
 //Maintained by: Daegan Brown
 //Number: 423-475-4384
@@ -27,10 +27,11 @@ class pathfindFunctions {
             double X;
             double Y;
             double neededHeading;
+            double deltaLong = std::abs(gps_long_target - current_long);
 
-            X = ( std::cos(gps_lat_target) * std::sin(std::abs(gps_long_target - current_long)));
+            X = ( std::cos(gps_lat_target) * std::sin(deltaLong));
             Y = ( std::cos(current_lat) * std::sin(gps_lat_target)) 
-                - (std::sin(current_lat) * std::cos(gps_lat_target) * std::cos(std::abs(gps_long_target - current_long)));
+                - (std::sin(current_lat) * std::cos(gps_lat_target) * std::cos(deltaLong));
             neededHeading = (180.0/3.141592) * atan2(X,Y);
             std::cout << neededHeading << std::endl;
             return neededHeading;

@@ -1,8 +1,8 @@
 //***********************************************
 //rover-Autonomy Server
 //runs commands from the client
-//Last edited Feb 17, 2024
-//Version: 1.1
+//Last edited Feb 21, 2024
+//Version: 1.2
 //***********************************************
 //Maintained by: Daegan Brown
 //Number: 423-475-4384
@@ -117,11 +117,17 @@ private:
         // 5: Goes forward. Used for testing. 
         auto message_motors = std_msgs::msg::String();
         auto message_imu = std_msgs::msg::String();
+        double current_lat;
+        double current_long;
         double bearing;
+        float currentHeading;
+        float needHeading;
+        int i_needHeading;
         int iterate = 0;
 
         if (navigate_type == 1)
         {
+            std::cout << "Selected GPS targeting" << std::endl;
             while (iterate == 0)
             {
                 message_imu.data = "auto,rotateTo,15,0";
@@ -132,17 +138,17 @@ private:
                 message_imu.data = "data,getOrientation";
                 publisher_imu->publish(message_imu);
                 usleep(100000);
-                float currentHeading = std::stof(imu_bearing);
+                currentHeading = std::stof(imu_bearing);
 
                 message_imu.data = "data,getGPS";
                 publisher_imu->publish(message_imu);
                 usleep(100000);
-                double current_lat = gps_data.imu_command_gps(imu_bearing,1);
-                double current_long = gps_data.imu_command_gps(imu_bearing,2);
+                current_lat = gps_data.imu_command_gps(imu_bearing,1);
+                current_long = gps_data.imu_command_gps(imu_bearing,2);
 
 
-                float needHeading = locate_point.find_facing(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
-                int i_needHeading = needHeading;
+                needHeading = locate_point.find_facing(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
+                i_needHeading = needHeading;
 
                 message_imu.data = "auto,rotateTo,15," + i_needHeading;
                 publisher_imu->publish(message_imu);
@@ -159,8 +165,19 @@ private:
                 RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message_motors.data.c_str());
                 publisher_motors->publish(message_motors);
 
+                message_imu.data = "data,getGPS";
+                publisher_imu->publish(message_imu);
+                usleep(100000);
+                current_lat = gps_data.imu_command_gps(imu_bearing,1);
+                current_long = gps_data.imu_command_gps(imu_bearing,2);
+
+                if (((abs(current_lat - gps_lat_target) >= 0.00001) || (abs(current_lat - gps_lat_target) <= 0.00001)) && \
+                    ((abs(current_long - gps_long_target) >= 0.00001) || (abs(current_long - gps_long_target) <= 0.00001)))
+                {
+                    
+                    iterate++;
+                }
                 
-                iterate++;
             }
              
             
