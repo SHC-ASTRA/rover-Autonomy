@@ -29,9 +29,9 @@ class pathfindFunctions {
             double neededHeading;
             double deltaLong = std::abs(gps_long_target - current_long);
 
-            X = ( std::cos(gps_lat_target) * std::sin(deltaLong));
-            Y = ( std::cos(current_lat) * std::sin(gps_lat_target)) 
-                - (std::sin(current_lat) * std::cos(gps_lat_target) * std::cos(deltaLong));
+            X = ( std::cos((180.0/3.141592) * gps_lat_target) * std::sin((180.0/3.141592) * deltaLong));
+            Y = ( std::cos((180.0/3.141592) * current_lat) * std::sin( (180.0/3.141592) * gps_lat_target)) 
+                - (std::sin((180.0/3.141592) * current_lat) * std::cos((180.0/3.141592) * gps_lat_target) * std::cos((180.0/3.141592) * deltaLong));
             neededHeading = (180.0/3.141592) * atan2(X,Y);
             std::cout << neededHeading << std::endl;
             return neededHeading;
