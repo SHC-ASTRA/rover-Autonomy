@@ -32,6 +32,7 @@ using namespace std::placeholders;
 
 
 std::string imu_bearing;
+std::string imu_gps;
 
 class NavigateRoverServerNode : public rclcpp::Node 
 {
@@ -174,8 +175,8 @@ private:
                 message_imu.data = "data,getGPS";
                 publisher_imu->publish(message_imu);
                 usleep(100000);
-                current_lat = pathfind.imu_command_gps(imu_bearing,1);
-                current_long = pathfind.imu_command_gps(imu_bearing,2);
+                current_lat = pathfind.imu_command_gps(imu_gps,1);
+                current_long = pathfind.imu_command_gps(imu_gps,2);
 
                 if (((abs(current_lat - gps_lat_target) >= 0.00001) || (abs(current_lat - gps_lat_target) <= 0.00001)) && \
                     ((abs(current_long - gps_long_target) >= 0.00001) || (abs(current_long - gps_long_target) <= 0.00001)))
@@ -237,8 +238,8 @@ private:
                 message_imu.data = "data,getGPS";
                 publisher_imu->publish(message_imu);
                 usleep(100000);
-                current_lat = pathfind.imu_command_gps(imu_bearing,1);
-                current_long = pathfind.imu_command_gps(imu_bearing,2);
+                current_lat = pathfind.imu_command_gps(imu_gps,1);
+                current_long = pathfind.imu_command_gps(imu_gps,2);
                     
                 iterate++;
                 
@@ -287,10 +288,25 @@ private:
         RCLCPP_INFO(this->get_logger(), "Recieved IMU: '%s'", msg.data.c_str());
         command = msg.data;
 
+        pathfindFunctions findIMU;
+        std::string delimiter = ",";
+            size_t pos = 0;
+            std::string token;
+            std::string token1;
+            std::string scommand = command.c_str();
+            pos = scommand.find(delimiter);
+            token = scommand.substr(0, pos);
+            
 
-
-        pathfindFunctions findBearing;
-        imu_bearing = findBearing.imu_command(command);
+        if (token == "orientation")
+        {
+            
+            imu_bearing = command;
+        }
+        else if (token == "gps")
+        {
+            imu_gps = command;
+        }
 
     }
 
