@@ -113,7 +113,7 @@ private:
         // 1: Simply go to GPS coordinates, stop, and signal.
         // 2: Go and search target area for aruco tags
         // 3: Go and search target area for objects
-        // 4: Stops rover where it is
+        // 4: 1 but only looping once
         // 5: Goes forward. Used for testing. 
         auto message_motors = std_msgs::msg::String();
         auto message_imu = std_msgs::msg::String();
@@ -158,7 +158,7 @@ private:
                 message_motors.data = rover_command;
                 RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message_motors.data.c_str());
                 publisher_motors->publish(message_motors);
-                usleep(3 * microsecond);
+                usleep(2.5 * microsecond);
 
                 rover_command = "ctrl,0,0";  
                 message_motors.data = rover_command;
@@ -183,6 +183,59 @@ private:
             
             RCLCPP_INFO(this->get_logger(), "At location");            
             
+        }
+        //This is a test loop. Same code as 1, the only difference is instead of drving until it reaches the point, 
+        //It faces it once, drives towards it once, then is done. 
+        else if (navigate_type == 4)
+        {
+            std::cout << "Selected GPS targeting, but once" << std::endl;
+            while (iterate == 0)
+            {
+                message_imu.data = "auto,rotateTo,15,0";
+                publisher_imu->publish(message_imu);
+                
+                pathfindFunctions locate_point;
+                pathfindFunctions gps_data;
+                message_imu.data = "data,getOrientation";
+                publisher_imu->publish(message_imu);
+                usleep(100000);
+                currentHeading = std::stof(imu_bearing);
+
+                message_imu.data = "data,getGPS";
+                publisher_imu->publish(message_imu);
+                usleep(100000);
+                current_lat = gps_data.imu_command_gps(imu_bearing,1);
+                current_long = gps_data.imu_command_gps(imu_bearing,2);
+
+
+                needHeading = locate_point.find_facing(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
+                i_needHeading = needHeading;
+
+                message_imu.data = "auto,rotateTo,15," + i_needHeading;
+                publisher_imu->publish(message_imu);
+
+
+                rover_command = "ctrl,.20,.20";  
+                message_motors.data = rover_command;
+                RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message_motors.data.c_str());
+                publisher_motors->publish(message_motors);
+                usleep(3 * microsecond);
+
+                rover_command = "ctrl,0,0";  
+                message_motors.data = rover_command;
+                RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message_motors.data.c_str());
+                publisher_motors->publish(message_motors);
+
+                message_imu.data = "data,getGPS";
+                publisher_imu->publish(message_imu);
+                usleep(100000);
+                current_lat = gps_data.imu_command_gps(imu_bearing,1);
+                current_long = gps_data.imu_command_gps(imu_bearing,2);
+                    
+                iterate++;
+                
+                
+            }
         }
         else if (navigate_type == 5)
         {
