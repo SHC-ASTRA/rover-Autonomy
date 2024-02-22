@@ -28,14 +28,46 @@ class pathfindFunctions {
             double Y;
             double neededHeading;
             double deltaLong = std::abs(gps_long_target - current_long);
+            double deg2rad = (180.0/3.141592);
 
-            X = ( std::cos((180.0/3.141592) * gps_lat_target) * std::sin((180.0/3.141592) * deltaLong));
-            Y = ( std::cos((180.0/3.141592) * current_lat) * std::sin( (180.0/3.141592) * gps_lat_target)) 
-                - (std::sin((180.0/3.141592) * current_lat) * std::cos((180.0/3.141592) * gps_lat_target) * std::cos((180.0/3.141592) * deltaLong));
-            neededHeading = (180.0/3.141592) * atan2(X,Y);
+            X = ( std::cos(deg2rad * gps_lat_target) * std::sin(deg2rad * deltaLong));
+            Y = ( std::cos(deg2rad * current_lat) * std::sin( deg2rad * gps_lat_target))\
+                - (std::sin(deg2rad * current_lat) * std::cos(deg2rad * gps_lat_target) * std::cos(deg2rad * deltaLong));
+            neededHeading = deg2rad * atan2(X,Y);
             std::cout << neededHeading << std::endl;
             return neededHeading;
         }
+
+        //Find out how far the rover has left to go, in meters. 
+        //Input is GPS targets then GPS currents
+        float find_distance(double gps_lat_target, double gps_long_target, 
+            float currentHeading, double current_lat, double current_long) 
+        {
+            
+            
+            double deg2rad = (180.0/3.141592);
+            double deltaLat = deg2rad * std::abs(gps_lat_target - current_lat);
+            double deltaLong = deg2rad * std::abs(gps_long_target - current_long);
+            double a;
+            double c;
+            double d;
+            int R = 6371000;    //Earth Radius
+
+            //Haversine formula
+            a = (std::sin(deltaLat / 2) * std::sin(deltaLat / 2)) + \
+            (std::cos(deg2rad * current_lat) * std::cos(deg2rad * gps_lat_target) * \
+            (std::sin(deltaLong / 2) * std::sin(deltaLat / 2)));
+            c = 2 * atan2(sqrt(a), sqrt(1-a));
+            d = R * c;
+            return d;
+
+
+
+
+
+            
+        }
+
 
         //Parses imu string for IMU facing
         std::string imu_command(std::string command)
@@ -56,10 +88,13 @@ class pathfindFunctions {
                 //float command_r = std::stof(scommand);
                 return scommand;
             }
-            
-            
-            
+            else //NEED FAILSTATE ASAP
+            {
+                    return scommand;
+            }
+
         }
+
 
         //Parses imu string for GPS location
         double imu_command_gps(std::string command, int choose)
@@ -85,7 +120,10 @@ class pathfindFunctions {
                 std::cout << longitude;
                 return longitude;
             }
-            
+            else //ADD FAILSTATE ASAP
+            {
+                return pos;
+            }
             
         }
 };

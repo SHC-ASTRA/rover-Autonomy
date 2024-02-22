@@ -2,7 +2,7 @@
 //rover-Autonomy Server
 //runs commands from the client
 //Last edited Feb 21, 2024
-//Version: 1.2
+//Version: 1.3
 //***********************************************
 //Maintained by: Daegan Brown
 //Number: 423-475-4384
@@ -119,9 +119,11 @@ private:
         auto message_imu = std_msgs::msg::String();
         double current_lat;
         double current_long;
-        double bearing;
+        //double bearing;
         float currentHeading;
         float needHeading;
+        double needDistance;
+        int i_needDistance;
         int i_needHeading;
         int iterate = 0;
 
@@ -133,8 +135,8 @@ private:
                 message_imu.data = "auto,rotateTo,15,0";
                 publisher_imu->publish(message_imu);
                 
-                pathfindFunctions locate_point;
-                pathfindFunctions gps_data;
+                pathfindFunctions pathfind;
+
                 message_imu.data = "data,getOrientation";
                 publisher_imu->publish(message_imu);
                 usleep(100000);
@@ -143,12 +145,16 @@ private:
                 message_imu.data = "data,getGPS";
                 publisher_imu->publish(message_imu);
                 usleep(100000);
-                current_lat = gps_data.imu_command_gps(imu_bearing,1);
-                current_long = gps_data.imu_command_gps(imu_bearing,2);
+                current_lat = pathfind.imu_command_gps(imu_bearing,1);
+                current_long = pathfind.imu_command_gps(imu_bearing,2);
 
+                needDistance = pathfind.find_distance(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
+                //i_needDistance = needDistance;
 
-                needHeading = locate_point.find_facing(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
+                needHeading = pathfind.find_facing(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
                 i_needHeading = needHeading;
+
+                std::cout << std::fixed << std::setprecision(1) << needDistance << std::endl;
 
                 message_imu.data = "auto,rotateTo,15," + i_needHeading;
                 publisher_imu->publish(message_imu);
@@ -168,8 +174,8 @@ private:
                 message_imu.data = "data,getGPS";
                 publisher_imu->publish(message_imu);
                 usleep(100000);
-                current_lat = gps_data.imu_command_gps(imu_bearing,1);
-                current_long = gps_data.imu_command_gps(imu_bearing,2);
+                current_lat = pathfind.imu_command_gps(imu_bearing,1);
+                current_long = pathfind.imu_command_gps(imu_bearing,2);
 
                 if (((abs(current_lat - gps_lat_target) >= 0.00001) || (abs(current_lat - gps_lat_target) <= 0.00001)) && \
                     ((abs(current_long - gps_long_target) >= 0.00001) || (abs(current_long - gps_long_target) <= 0.00001)))
@@ -194,8 +200,8 @@ private:
                 message_imu.data = "auto,rotateTo,15,0";
                 publisher_imu->publish(message_imu);
                 
-                pathfindFunctions locate_point;
-                pathfindFunctions gps_data;
+                pathfindFunctions pathfind;
+                
                 message_imu.data = "data,getOrientation";
                 publisher_imu->publish(message_imu);
                 usleep(100000);
@@ -204,11 +210,13 @@ private:
                 message_imu.data = "data,getGPS";
                 publisher_imu->publish(message_imu);
                 usleep(100000);
-                current_lat = gps_data.imu_command_gps(imu_bearing,1);
-                current_long = gps_data.imu_command_gps(imu_bearing,2);
+                current_lat = pathfind.imu_command_gps(imu_bearing,1);
+                current_long = pathfind.imu_command_gps(imu_bearing,2);
 
+                needDistance = pathfind.find_distance(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
+                //i_needDistance = needDistance;
 
-                needHeading = locate_point.find_facing(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
+                needHeading = pathfind.find_facing(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
                 i_needHeading = needHeading;
 
                 message_imu.data = "auto,rotateTo,15," + i_needHeading;
@@ -229,8 +237,8 @@ private:
                 message_imu.data = "data,getGPS";
                 publisher_imu->publish(message_imu);
                 usleep(100000);
-                current_lat = gps_data.imu_command_gps(imu_bearing,1);
-                current_long = gps_data.imu_command_gps(imu_bearing,2);
+                current_lat = pathfind.imu_command_gps(imu_bearing,1);
+                current_long = pathfind.imu_command_gps(imu_bearing,2);
                     
                 iterate++;
                 
