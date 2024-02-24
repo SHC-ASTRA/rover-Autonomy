@@ -104,9 +104,12 @@ class pathfindFunctions {
             std::string token;
             std::string scommand = command.c_str();
             pos = scommand.find(delimiter);
+            scommand.erase(0, pos + delimiter.length());
+            pos = scommand.find(delimiter);
             if (choose == 1)
             {
-                scommand.erase(pos + delimiter.length(), scommand.length());
+                scommand.erase(pos + delimiter.length(), (scommand.length() - 1));
+                std:: cout << scommand << std::endl;    //remove for final 
                 double latitude = std::stof(scommand);
                 std::cout << latitude;
                 return latitude;
@@ -115,7 +118,8 @@ class pathfindFunctions {
             {
                 scommand.erase(0,pos + delimiter.length());
                 pos = scommand.find(delimiter);
-                scommand.erase(pos  + delimiter.length(), scommand.length());
+                scommand.erase(pos  + delimiter.length(), (scommand.length() - 1));
+                std:: cout << scommand << std::endl;    //remove for final 
                 double longitude = std::stof(scommand);
                 std::cout << longitude;
                 return longitude;
