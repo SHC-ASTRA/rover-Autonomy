@@ -188,7 +188,8 @@ private:
             }
              
             
-            RCLCPP_INFO(this->get_logger(), "At location");            
+            RCLCPP_INFO(this->get_logger(), "At location"); 
+            std::cout << "Arrived at location!"           
             
         }
         //This is a test loop. Same code as 1, the only difference is instead of drving until it reaches the point, 
