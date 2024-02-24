@@ -149,8 +149,8 @@ private:
                 current_lat = pathfind.imu_command_gps(imu_gps,1);
                 current_long = pathfind.imu_command_gps(imu_gps,2);
 
-                needDistance = pathfind.find_distance(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
-                i_needDistance = needDistance;
+                //needDistance = pathfind.find_distance(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
+                //i_needDistance = needDistance;
 
                 needHeading = pathfind.find_facing(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
                 i_needHeading = needHeading;
@@ -214,8 +214,8 @@ private:
                 current_lat = pathfind.imu_command_gps(imu_gps,1);
                 current_long = pathfind.imu_command_gps(imu_gps,2);
 
-                needDistance = pathfind.find_distance(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
-                i_needDistance = needDistance;
+                //needDistance = pathfind.find_distance(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
+                //i_needDistance = needDistance;
                 //RCLCPP_INFO(this->get_logger(), "Remaining distance: '%d'", i_needDistance);
 
 
