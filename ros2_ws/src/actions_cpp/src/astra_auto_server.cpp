@@ -216,12 +216,12 @@ private:
 
                 needDistance = pathfind.find_distance(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
                 i_needDistance = needDistance;
-                RCLCPP_INFO(this->get_logger(), "Remaining distance: '%d'", i_needDistance);
+                //RCLCPP_INFO(this->get_logger(), "Remaining distance: '%d'", i_needDistance);
 
 
                 needHeading = pathfind.find_facing(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
                 i_needHeading = needHeading;
-                RCLCPP_INFO(this->get_logger(), "Need to head: '%d'", message_motors.data.c_str());
+                //RCLCPP_INFO(this->get_logger(), "Need to head: '%d'", message_motors.data.c_str());
 
 
                 message_imu.data = "auto,turningTo,15000," + std::to_string(needHeading);
