@@ -219,8 +219,7 @@ private:
                 //RCLCPP_INFO(this->get_logger(), "Remaining distance: '%d'", i_needDistance);
 
 
-                needHeading = pathfind.find_facing(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
-                i_needHeading = needHeading;
+                i_needHeading = pathfind.find_facing(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
                 //RCLCPP_INFO(this->get_logger(), "Need to head: '%d'", message_motors.data.c_str());
 
 

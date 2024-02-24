@@ -20,22 +20,26 @@ class pathfindFunctions {
     public: 
         
         //Find which direction the rover needs to face
-        float find_facing(double gps_lat_target, double gps_long_target, 
+        int find_facing(double gps_lat_target, double gps_long_target, 
             float currentHeading, double current_lat, double current_long) 
         {
             std::cout << gps_lat_target << ", " << gps_long_target << std::endl;
             double X;
             double Y;
             double neededHeading;
-            double deltaLong = std::abs(gps_long_target - current_long);
-            double deg2rad = (180.0/3.141592);
+            double deltaLong = gps_long_target - current_long;
+            double deg2rad = (3.141592/180);
+            double rad2deg = (180/3.141592);
+            int i_neededHeading;
 
             X = ( std::cos(deg2rad * gps_lat_target) * std::sin(deg2rad * deltaLong));
             Y = ( std::cos(deg2rad * current_lat) * std::sin( deg2rad * gps_lat_target))\
                 - (std::sin(deg2rad * current_lat) * std::cos(deg2rad * gps_lat_target) * std::cos(deg2rad * deltaLong));
-            neededHeading = deg2rad * atan2(X,Y);
-            std::cout << neededHeading << std::endl;
-            return neededHeading;
+            neededHeading = (rad2deg * atan2(X,Y)) + 360;
+            i_neededHeading = neededHeading;
+            i_neededHeading = i_neededHeading % 360;
+            std::cout << i_neededHeading << std::endl;
+            return i_neededHeading;
         }
 
         //Find out how far the rover has left to go, in meters. 
@@ -46,8 +50,8 @@ class pathfindFunctions {
             
             
             double deg2rad = (180.0/3.141592);
-            double deltaLat = deg2rad * std::abs(gps_lat_target - current_lat);
-            double deltaLong = deg2rad * std::abs(gps_long_target - current_long);
+            double deltaLat = deg2rad * gps_lat_target - current_lat;
+            double deltaLong = deg2rad * gps_long_target - current_long;
             double a;
             double c;
             double d;
