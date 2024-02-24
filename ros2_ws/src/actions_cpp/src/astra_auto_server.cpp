@@ -1,8 +1,8 @@
 //***********************************************
 //rover-Autonomy Server
 //runs commands from the client
-//Last edited Feb 21, 2024
-//Version: 1.3
+//Last edited Feb 24, 2024
+//Version: 1.3c
 //***********************************************
 //Maintained by: Daegan Brown
 //Number: 423-475-4384
@@ -146,8 +146,8 @@ private:
                 message_imu.data = "data,getGPS";
                 publisher_imu->publish(message_imu);
                 usleep(100000);
-                current_lat = pathfind.imu_command_gps(imu_bearing,1);
-                current_long = pathfind.imu_command_gps(imu_bearing,2);
+                current_lat = pathfind.imu_command_gps(imu_gps,1);
+                current_long = pathfind.imu_command_gps(imu_gps,2);
 
                 needDistance = pathfind.find_distance(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
                 i_needDistance = needDistance;
@@ -211,8 +211,8 @@ private:
                 message_imu.data = "data,sendGPS";
                 publisher_imu->publish(message_imu);
                 usleep(100000);
-                current_lat = pathfind.imu_command_gps(imu_bearing,1);
-                current_long = pathfind.imu_command_gps(imu_bearing,2);
+                current_lat = pathfind.imu_command_gps(imu_gps,1);
+                current_long = pathfind.imu_command_gps(imu_gps,2);
 
                 needDistance = pathfind.find_distance(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
                 i_needDistance = needDistance;
@@ -336,14 +336,15 @@ private:
 
         if (token == "orientation")
         {
-            
-            imu_bearing = command;
             RCLCPP_INFO(this->get_logger(), "Recieved IMU bearing");
+            //Turns command into the proper bearing
+            imu_bearing = findIMU.imu_command(command); 
         }
         else if (token == "gps")
         {
-            imu_gps = command;
             RCLCPP_INFO(this->get_logger(), "Recieved GPS location");
+            //Turns command into GPS string
+            imu_gps = command;
         }
 
     }
