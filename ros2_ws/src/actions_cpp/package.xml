@@ -8,7 +8,8 @@
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-
+  <build_depend>opencv2</build_depend>
+  <run_depend></run_depend>
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
   <depend>rclcpp_action</depend>
