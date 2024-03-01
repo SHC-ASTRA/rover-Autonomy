@@ -162,6 +162,7 @@ private:
         // 3: Go and search target area for objects
         // 4: 1 but only looping once
         // 5: Goes forward. Used for testing. 
+        // 6: Search pattern
         auto message_motors = std_msgs::msg::String();
         auto message_imu = std_msgs::msg::String();
         double current_lat;
@@ -225,7 +226,7 @@ private:
 
                 message_imu.data = "auto,turningTo,15000," + std::to_string(i_needHeading);
                 publisher_imu->publish(message_imu);
-                usleep(5 * microsecond);
+                usleep(3.5 * microsecond);
 
                 
                 rover_command = "ctrl,-0.6,-0.6";  
@@ -257,7 +258,7 @@ private:
              
             message_imu.data = "led_set,0,0,300";
             publisher_imu->publish(message_imu);
-            RCLCPP_INFO(this->get_logger(), "At location"); 
+            RCLCPP_INFO(this->get_logger(), "Arrived at location"); 
             std::cout << "Arrived at location!";           
             
         }
@@ -379,7 +380,65 @@ private:
             */
         }
         
-        
+        //Square search patter, mostly for SAR filming
+        else if (navigate_type == 6)
+        {
+            std::cout << "Selected Square Search Pattern" << std::endl;
+            message_imu.data = "led_set,303,0,0";
+            publisher_imu->publish(message_imu);
+            RCLCPP_INFO(this->get_logger(), "Begining Search");
+            //
+            for (int j = 0; j < gps_lat_target; j++)
+            {
+                //Rover faces North
+                message_imu.data = "auto,turningTo,15000,350";
+                publisher_imu->publish(message_imu);
+                usleep(5 * microsecond);
+
+                //Begins driving forward at 40% speed
+                message_motors.data = "ctrl,-0.4,-0.4";
+                publisher_motors->publish(message_motors);
+                //Rover waits for the third input seconds before stopping
+                usleep(gps_long_target * microsecond);
+                message_motors.data = "ctrl,0.0,0.0";
+                publisher_motors->publish(message_motors);
+                //Rover faces East
+                message_imu.data = "auto,turningTo,15000,80";
+                publisher_imu->publish(message_imu);
+                usleep(5 * microsecond);
+
+                //Rover moves forward for a second before stopping againt
+                message_motors.data = "ctrl,-0.4,-0.4";
+                publisher_motors->publish(message_motors);
+                usleep(4 * microsecond);
+                message_motors.data = "ctrl,0.0,0.0";
+                publisher_motors->publish(message_motors);
+                //Rover faces South and drives that way for the same amount of time before stopping
+                message_imu.data = "auto,turningTo,15000,170";
+                publisher_imu->publish(message_imu);
+                usleep(5 * microsecond);
+                message_motors.data = "ctrl,-0.4,-0.4";
+                publisher_motors->publish(message_motors);
+                usleep(gps_long_target * microsecond);
+                message_motors.data = "ctrl,0.0,0.0";
+                publisher_motors->publish(message_motors);
+                //Faces East again, moves forward one second, and stops the loop
+                message_imu.data = "auto,turningTo,15000,80";
+                publisher_imu->publish(message_imu);
+                usleep(5 * microsecond);
+                message_motors.data = "ctrl,-0.4,-0.4";
+                publisher_motors->publish(message_motors);
+                usleep(4 * microsecond);
+                message_motors.data = "ctrl,0.0,0.0";
+                publisher_motors->publish(message_motors);
+            }
+        }
+        else if (navigate_type == 0)
+        {
+            message_motors.data = "ctrl,0,0";
+            RCLCPP_INFO(this->get_logger(), "Stopping");
+            publisher_motors->publish(message_motors);
+        }
 
         // Pause before stopping 
 
