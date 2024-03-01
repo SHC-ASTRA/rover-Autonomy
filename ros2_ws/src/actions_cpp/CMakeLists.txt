@@ -27,7 +27,7 @@ add_executable(count_until_client src/count_until_client.cpp)
 ament_target_dependencies(count_until_client rclcpp rclcpp_action astra_auto_interfaces)
 
 add_executable(navigate_rover_server src/astra_auto_server.cpp)
-ament_target_dependencies(navigate_rover_server rclcpp rclcpp_action std_msgs astra_auto_interfaces)
+ament_target_dependencies(navigate_rover_server rclcpp rclcpp_action std_msgs astra_auto_interfaces ${OpenCV_LIBS})
 target_link_libraries( navigate_rover_server ${OpenCV_LIBS} )
 
 add_executable(navigate_rover_client src/astra_auto_client.cpp)
