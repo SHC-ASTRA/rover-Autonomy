@@ -19,9 +19,6 @@ find_package( OpenCV REQUIRED )
 
 
 include_directories( ${OpenCV_INCLUDE_DIRS} )
-include_directories( /usr/local/include/opencv4/opencv2/objdetect/)
-link_libraries( ${OpenCV_LIBS} )
-link_libraries( ${OpenCV_INCLUDE_DIRS} )
 
 add_executable(count_until_server src/count_until_server.cpp)
 ament_target_dependencies(count_until_server rclcpp rclcpp_action astra_auto_interfaces)
