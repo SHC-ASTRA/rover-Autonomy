@@ -27,6 +27,8 @@
 #include "rclcpp/subscription_options.hpp"  // ROS2 subsriber info
 #include "std_msgs/msg/string.hpp"          // Message type for ROS2
 
+//openCV shenanigans
+#include <opencv2/opencv.hpp>
 //Other packages to include
 #include "astra_auto_interfaces/action/navigate_rover.hpp"      //contains action files and srv files
 
@@ -182,13 +184,15 @@ private:
         // 4: 1 but only looping once
         // 5: Goes forward. Used for testing. 
         // 6: Search pattern
+        // 7: AruCo Test
+        // 8: Object Detection
         auto message_motors = std_msgs::msg::String();
         auto message_imu = std_msgs::msg::String();
         double current_lat;
         double current_long;
         //double bearing;
-        float currentHeading;
-        float needHeading = 0;
+        //float currentHeading;
+        //float needHeading = 0;
         double needDistance;
         int i_needDistance;
         int i_needHeading;
@@ -221,7 +225,7 @@ private:
                 message_imu.data = "data,getOrientation";
                 publisher_imu->publish(message_imu);
                 usleep(0.5 * microsecond);
-                currentHeading = 0;
+                
                 
 
                 message_imu.data = "data,sendGPS";
@@ -232,12 +236,12 @@ private:
                 current_lat = pathfind.imu_command_gps(imu_gps,1);
                 current_long = pathfind.imu_command_gps(imu_gps,2);
 
-                //needDistance = pathfind.find_distance(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
-                //i_needDistance = needDistance;
-                //RCLCPP_INFO(this->get_logger(), "Remaining distance: '%d'", i_needDistance);
+                needDistance = pathfind.find_distance(gps_lat_target, gps_long_target, current_lat, current_long);
+                i_needDistance = needDistance;
+                RCLCPP_INFO(this->get_logger(), "Remaining distance: '%d'", i_needDistance);
 
 
-                i_needHeading = pathfind.find_facing(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
+                i_needHeading = pathfind.find_facing(gps_lat_target, gps_long_target, current_lat, current_long);
                 //RCLCPP_INFO(this->get_logger(), "Need to head: '%d'", message_motors.data.c_str());
                 
                 std::cout << std::fixed << "Calculated Heading: " << i_needHeading << std::endl << std::endl << std::endl << std::endl;
@@ -298,7 +302,6 @@ private:
                 message_imu.data = "data,getOrientation";
                 publisher_imu->publish(message_imu);
                 usleep(3 * microsecond);
-                currentHeading = 0;
                 for (int i; i<5000; i++)
                 {
                     usleep(1000);
@@ -320,7 +323,7 @@ private:
                 //RCLCPP_INFO(this->get_logger(), "Remaining distance: '%d'", i_needDistance);
 
 
-                i_needHeading = pathfind.find_facing(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
+                i_needHeading = pathfind.find_facing(gps_lat_target, gps_long_target, current_lat, current_long);
                 //RCLCPP_INFO(this->get_logger(), "Need to head: '%d'", message_motors.data.c_str());
                 
                 std::cout << std::fixed << "Calculated Heading: " << i_needHeading << std::endl << std::endl << std::endl << std::endl;
@@ -458,6 +461,11 @@ private:
             RCLCPP_INFO(this->get_logger(), "Stopping");
             publisher_motors->publish(message_motors);
         }
+        else if (navigate_type == 7)
+        {
+            
+        }
+
 
         // Pause before stopping 
 

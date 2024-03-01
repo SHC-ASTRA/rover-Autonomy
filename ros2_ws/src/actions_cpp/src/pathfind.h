@@ -28,8 +28,8 @@ class pathfindFunctions {
         
         //When given current latitude/longitude, and a target latitude/longitude, this function
         //will output a bearing to face the target point.
-        int find_facing(double gps_lat_target, double gps_long_target, 
-            float currentHeading, double current_lat, double current_long) 
+        int find_facing(double gps_lat_target, double gps_long_target, \
+                         double current_lat, double current_long) 
         {
             std::cout << gps_lat_target << ", " << gps_long_target << std::endl;
             double X;
@@ -52,8 +52,8 @@ class pathfindFunctions {
 
         //Find out how far the rover has left to go, in meters. 
         //Input is GPS targets then GPS currents
-        float find_distance(double gps_lat_target, double gps_long_target, 
-            float currentHeading, double current_lat, double current_long) 
+        float find_distance(double gps_lat_target, double gps_long_target, \
+            double current_lat, double current_long) 
         {
             
             
