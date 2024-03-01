@@ -30,6 +30,8 @@
 //openCV shenanigans
 #include <opencv2/opencv.hpp>
 #include <opencv2/aruco.hpp>
+#include <opencv2/videoio.hpp>
+
 
 //Other packages to include
 #include "astra_auto_interfaces/action/navigate_rover.hpp"      //contains action files and srv files
@@ -465,8 +467,75 @@ private:
         }
         else if (navigate_type == 7)
         {
-           cv::Mat image;
-           
+
+
+
+            //Generate Dictionary 
+
+            /*cv::Mat markerImage;
+            cv::aruco::Dictionary dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
+            cv::aruco::generateImageMarker(dictionary, 23, 200, markerImage, 1);
+            cv::imwrite("marker23.png", markerImage);*/
+
+            //cv::VideoCapture(0) feed;
+            cv::Mat image;
+            cv::VideoCapture feed;
+
+
+            std::vector<int> markerIds;
+            std::vector<std::vector<cv::Point2f>> markerCorners, rejectedCandidates;
+            cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
+            
+
+            //int deviceID = 1;
+            //int apiID = cv::CAP_ANY;
+
+            feed.open(-2);
+            if (!feed.isOpened())
+            {
+                std::cerr << "ERROR! Unable to open camera\n" << std::endl;
+                
+            }
+
+            std::cout << "start grabbing" << std::endl;
+            std::cout << "Press any key to terminate" << std::endl;
+
+
+            while (feed.grab())
+            {
+                cv::Mat imageCopy;
+                feed.retrieve(image);
+                image.copyTo(imageCopy);
+
+                std::vector<int> ids;
+                std::vector<std::vector<cv::Point2f>> corners, rejected;
+                cv::aruco::detectMarkers(image, dictionary, markerCorners, markerIds);
+
+                if (ids.size() > 0)
+                    cv::aruco::drawDetectedMarkers(imageCopy, corners, ids);
+
+                cv::imshow("out", imageCopy);
+                char key = (char) cv::waitKey(0);
+                if (key == 27)
+                    break;
+
+            }
+            /*
+            for (;;)
+            {
+                feed.read(image);
+                if (image.empty())
+                {
+                    std::cerr << "ERROR! Blank frame grabbed\n" << std::endl;
+                    break;
+                }
+
+                imshow("Live", image);
+                if (cv::waitKey(5) >= 0)
+                    break;
+            }
+            */
+            
         }
 
 
