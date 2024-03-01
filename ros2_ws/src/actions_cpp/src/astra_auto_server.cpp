@@ -1,39 +1,57 @@
 //***********************************************
 //rover-Autonomy Server
 //runs commands from the client
-//Last edited Feb 24, 2024
-//Version: 1.3c
-//***********************************************
+//Last edited Feb 29, 2024
+//Version: 1.5
+//*************************************************************************************************
 //Maintained by: Daegan Brown
 //Number: 423-475-4384
 //Email: daeganbrown03@gmail.com
-//***********************************************
-#include <memory>
-#include <chrono>
-#include <functional>
-#include <string>
-#include <unistd.h>
+//*************************************************************************************************
+//INCLUDES
+//*************************************************************************************************
 
-#include "pathfind.h"
+//C++ includes, normal
+#include <memory>                           //
+#include <chrono>                           //
+#include <functional>                       //
+#include <string>                           // String type variable
+#include <unistd.h>                         // usleep 
 
-#include "rclcpp/rclcpp.hpp"
-#include "rclcpp_action/rclcpp_action.hpp"
-#include "rclcpp/subscription_options.hpp"
+//Made by Daegan Brown for ASTRA
+#include "pathfind.h"                       // My functions
 
-#include "std_msgs/msg/string.hpp"
+//ROS2 includes
+#include "rclcpp/rclcpp.hpp"                // General ROS2 stuff
+#include "rclcpp_action/rclcpp_action.hpp"  // ROS2 actions info
+#include "rclcpp/subscription_options.hpp"  // ROS2 subsriber info
+#include "std_msgs/msg/string.hpp"          // Message type for ROS2
 
-#include "astra_auto_interfaces/action/navigate_rover.hpp"
+//Other packages to include
+#include "astra_auto_interfaces/action/navigate_rover.hpp"      //contains action files and srv files
+
+//*************************************************************************************************
+//Predeclarations
+//*************************************************************************************************
 
 
-
+//Shorthands and other such things
 using NavigateRover = astra_auto_interfaces::action::NavigateRover;
 using NavigateRoverGoalHandle = rclcpp_action::ServerGoalHandle<NavigateRover>;
 using namespace std::placeholders;
 
 
-std::string imu_bearing;
+//Global Variables
+std::string imu_bearing;                    
 std::string imu_gps;
 
+
+//*************************************************************************************************
+//ROS2 Nodes
+//*************************************************************************************************
+
+
+// Node for subcribing to topics
 class NavigateRoverSubscriberNode : public rclcpp::Node 
 {
 public:
@@ -80,6 +98,7 @@ private:
 
 };
 
+// Node for the action server
 class NavigateRoverServerNode : public rclcpp::Node 
 {
 public:
@@ -499,6 +518,9 @@ private:
     rclcpp_action::Server<NavigateRover>::SharedPtr navigate_rover_server_;
 };
 
+//*************************************************************************************************
+// Main
+//*************************************************************************************************
 int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);

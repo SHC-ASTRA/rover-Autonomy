@@ -1,25 +1,33 @@
-//***********************************************
+//*************************************************************************************************
 //rover-Autonomy Header file
 //Holds functions for various pathfinding
-//Last edited Feb 24, 2024
-//***********************************************
+//Last edited Feb 29, 2024
+//*************************************************************************************************
 //Maintained by: Daegan Brown
 //Number: 423-475-4384
 //Email: daeganbrown03@gmail.com
-//***********************************************
-#include <memory>
-#include <chrono>
-#include <functional>
-#include <string>
-#include <unistd.h>
-#include <iostream>
-#include <cmath>
+//*************************************************************************************************
+//Includes
+//*************************************************************************************************
 
 
+// C++ includes
+#include <memory>                           //
+#include <chrono>                           //
+#include <functional>                       //
+#include <string>                           //
+#include <unistd.h>                         // usleep
+#include <iostream>                         // cout and cin
+#include <cmath>                            // sin, cos, tan2,
+
+//*************************************************************************************************
+//Functions
+//*************************************************************************************************
 class pathfindFunctions {
     public: 
         
-        //Find which direction the rover needs to face
+        //When given current latitude/longitude, and a target latitude/longitude, this function
+        //will output a bearing to face the target point.
         int find_facing(double gps_lat_target, double gps_long_target, 
             float currentHeading, double current_lat, double current_long) 
         {
