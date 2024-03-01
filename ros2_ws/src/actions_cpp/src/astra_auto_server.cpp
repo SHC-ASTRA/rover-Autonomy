@@ -29,6 +29,8 @@
 
 //openCV shenanigans
 #include <opencv2/opencv.hpp>
+#include <opencv2/aruco.hpp>
+
 //Other packages to include
 #include "astra_auto_interfaces/action/navigate_rover.hpp"      //contains action files and srv files
 
@@ -463,7 +465,8 @@ private:
         }
         else if (navigate_type == 7)
         {
-            
+           cv::Mat image;
+           
         }
 
 
