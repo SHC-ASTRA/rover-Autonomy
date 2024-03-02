@@ -44,8 +44,11 @@ install(TARGETS
   count_until_client
   navigate_rover_server
   navigate_rover_client
-  DIRECTORY lib/ 
   DESTINATION lib/${PROJECT_NAME}/
+)
+install ( 
+  DIRECTORY lib/
+  DESTINATION lib 
 )
 
 ament_package()
