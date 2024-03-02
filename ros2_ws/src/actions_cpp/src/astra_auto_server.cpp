@@ -518,7 +518,7 @@ private:
             cv::VideoWriter outputVideo;    
             int codec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');  // select desired codec (must be available at runtime)
             double fps = 25.0;                          // framerate of the created video stream
-            std::string filename = "./live.avi";             // name of the output video file
+            std::string filename = "./live.mjpg";             // name of the output video file
             outputVideo.open(filename, codec, fps, image.size(), true);
             // check if we succeeded
             if (!outputVideo.isOpened()) {
