@@ -4,6 +4,7 @@ project(actions_cpp VERSION 1.1)
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
+set(CMAKE_EXPORT_COMPILTE_COMMANDS true)
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
