@@ -587,7 +587,7 @@ private:
                 //int waitTime = 1;
                 //char key = (char) cv::waitKey(1);
                 //if (key == 27)
-                if (iterate >= 100)
+                if (iterateIT >= 100)
                 {
                     break;
                 }
