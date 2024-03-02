@@ -47,7 +47,7 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}/
 )
 install ( 
-  DIRECTORY lib/${OpenCV_LIBS}
+  DIRECTORY ${OpenCV_LIBS}/lib
   DESTINATION lib 
 )
 
