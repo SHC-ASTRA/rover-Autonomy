@@ -30,7 +30,7 @@ ament_target_dependencies(count_until_client rclcpp rclcpp_action astra_auto_int
 add_executable(navigate_rover_server src/astra_auto_server.cpp)
 #target_link_libraries( navigate_rover_server ${OpenCV_LIBS} )
 ament_target_dependencies(navigate_rover_server rclcpp rclcpp_action std_msgs astra_auto_interfaces )
-target_link_libraries( navigate_rover_server ${OpenCV_LIBS} )
+target_link_libraries( navigate_rover_server ${OpenCV_LIBS} opencv_highgui)
 
 add_executable(navigate_rover_client src/astra_auto_client.cpp)
 ament_target_dependencies(navigate_rover_client rclcpp rclcpp_action astra_auto_interfaces)
