@@ -513,8 +513,7 @@ private:
             std::cout << "Video Prepared" << std::endl;
 
 
-            cv::Mat res;al obsensor_uvc_stream_channel.cpp:159 getStreamChannelGroup Camera index out of range
-
+            cv::Mat res;
             std::vector<cv::Mat> spl;
             cv::VideoWriter outputVideo;    
             int codec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');  // select desired codec (must be available at runtime)
