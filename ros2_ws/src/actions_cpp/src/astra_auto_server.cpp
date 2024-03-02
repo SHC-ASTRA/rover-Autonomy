@@ -589,7 +589,7 @@ private:
                 //char key = (char) cv::waitKey(1);
                 //if (key == 27)
                 std::cout << iterateIT << std::endl;
-                if (iterateIT >= 100)
+                if (iterateIT >= 1000)
                 {
                     break;
                 }
