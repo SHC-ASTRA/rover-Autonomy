@@ -533,7 +533,7 @@ private:
             int iterateIT = 0;
             while (inputVideo.grab()) 
                 {
-                iterate ++;
+                iterateIT++;
                 cv::Mat image, imageCopy;
                 inputVideo.retrieve(image);
                 image.copyTo(imageCopy);
@@ -592,6 +592,7 @@ private:
                 {
                     break;
                 }
+                
                 
 
                 }
