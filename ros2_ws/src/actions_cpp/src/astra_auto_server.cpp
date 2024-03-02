@@ -475,7 +475,9 @@ private:
         {
             std::cout << "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFUUUUUUUUUUUUUUUUUUUU-" << std::endl;
             cv::VideoCapture inputVideo;
-            inputVideo.open(0);
+            int cameraNum;
+            std::cin >> cameraNum;
+            inputVideo.open(cameraNum);
             cv::aruco::DetectorParameters detectorParams = cv::aruco::DetectorParameters();
             cv::aruco::Dictionary dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
             cv::aruco::ArucoDetector detector(dictionary, detectorParams);
