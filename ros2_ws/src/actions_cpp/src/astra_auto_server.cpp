@@ -474,9 +474,10 @@ private:
         else if (navigate_type == 7)
         {
             std::cout << "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFUUUUUUUUUUUUUUUUUUUU-" << std::endl;
+            int cameraNum;
             std::cin >> cameraNum;
             cv::VideoCapture inputVideo(cameraNum);
-            int cameraNum;
+            
             
             //inputVideo.open(cameraNum);
             cv::aruco::DetectorParameters detectorParams = cv::aruco::DetectorParameters();
