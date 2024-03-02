@@ -586,10 +586,10 @@ private:
                 //outputVideo << res;
 
                 //int waitTime = 1;
-                //char key = (char) cv::waitKey(1);
-                //if (key == 27)
-                std::cout << iterateIT << std::endl;
-                if (iterateIT >= 90)
+                char key = (char) cv::waitKey(1);
+                if (key == 27)
+                //std::cout << iterateIT << std::endl;
+                //if (iterateIT >= 90)
                 {
                     break;
                 }
