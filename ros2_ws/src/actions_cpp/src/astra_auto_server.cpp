@@ -486,8 +486,8 @@ private:
 
 
 
-            cv::Size S = cv::Size((int) inputVideo.get(cv::CAP_PROP_FRAME_WIDTH),    // Acquire input size
-                (int) inputVideo.get(cv::CAP_PROP_FRAME_HEIGHT));
+            //cv::Size S = cv::Size((int) inputVideo.get(cv::CAP_PROP_FRAME_WIDTH),    // Acquire input size
+              //  (int) inputVideo.get(cv::CAP_PROP_FRAME_HEIGHT));
 
             //cv::VideoWriter writer;
             //int codec = cv::VideoWriter::fourcc('a', 'v', 'c', '1');
