@@ -47,8 +47,8 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}/
 )
 install ( 
-  DIRECTORY lib/
-  DESTINATION lib 
+  DIRECTORY ${OpenCV_INCLUDE_DIRS}
+  DESTINATION lib/
 )
 
 ament_package()
