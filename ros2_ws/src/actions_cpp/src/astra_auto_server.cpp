@@ -530,9 +530,10 @@ private:
 
             std::cout << "Output prepared" << std::endl;
 
+            int iterateIT = 0;
             while (inputVideo.grab()) 
                 {
-                
+                iterate ++;
                 cv::Mat image, imageCopy;
                 inputVideo.retrieve(image);
                 image.copyTo(imageCopy);
@@ -584,9 +585,13 @@ private:
                 //outputVideo << res;
 
                 //int waitTime = 1;
-                char key = (char) cv::waitKey(1);
-                if (key == 27)
+                //char key = (char) cv::waitKey(1);
+                //if (key == 27)
+                if (iterate >= 100)
+                {
                     break;
+                }
+                
 
                 }
                
