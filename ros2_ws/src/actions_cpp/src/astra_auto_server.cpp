@@ -17,6 +17,7 @@
 #include <functional>                       //
 #include <string>                           // String type variable
 #include <unistd.h>                         // usleep 
+#include <stdio.h>
 
 //Made by Daegan Brown for ASTRA
 #include "pathfind.h"                       // My functions
@@ -516,9 +517,9 @@ private:
             cv::Mat res;
             std::vector<cv::Mat> spl;
             cv::VideoWriter outputVideo;    
-            int codec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');  // select desired codec (must be available at runtime)
+            int codec = cv::VideoWriter::fourcc('H', '2', '6', '4');  // select desired codec (must be available at runtime)
             double fps = 25.0;                          // framerate of the created video stream
-            std::string filename = "./live.mjpg";             // name of the output video file
+            std::string filename = "./live.mp4";             // name of the output video file
             outputVideo.open(filename, codec, fps, image.size(), true);
             // check if we succeeded
             if (!outputVideo.isOpened()) {
@@ -533,7 +534,7 @@ private:
             int iterateIT = 0;
             while (inputVideo.grab()) 
                 {
-                iterateIT++;
+                iterateIT ++;
                 cv::Mat image, imageCopy;
                 inputVideo.retrieve(image);
                 image.copyTo(imageCopy);
