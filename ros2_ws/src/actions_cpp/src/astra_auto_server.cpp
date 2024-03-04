@@ -565,7 +565,7 @@ private:
 
 
 
-                //cv::imshow("out", imageCopy);
+                cv::imshow("out", imageCopy);
                 //inputVideo >> imageCopy;
                 //cv::Mat xframe;
                 //resize(imageCopy, xframe, sizeFrame);
