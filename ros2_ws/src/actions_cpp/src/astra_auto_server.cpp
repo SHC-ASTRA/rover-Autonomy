@@ -1,39 +1,70 @@
 //***********************************************
 //rover-Autonomy Server
 //runs commands from the client
-//Last edited Feb 24, 2024
-//Version: 1.3c
-//***********************************************
+//Last edited Feb 29, 2024
+//Version: 1.5
+//*************************************************************************************************
 //Maintained by: Daegan Brown
 //Number: 423-475-4384
 //Email: daeganbrown03@gmail.com
-//***********************************************
-#include <memory>
-#include <chrono>
-#include <functional>
-#include <string>
-#include <unistd.h>
+//*************************************************************************************************
+//INCLUDES
+//*************************************************************************************************
 
-#include "pathfind.h"
+//C++ includes, normal
+#include <memory>                           //
+#include <chrono>                           //
+#include <functional>                       //
+#include <string>                           // String type variable
+#include <unistd.h>                         // usleep 
+#include <stdio.h>
 
-#include "rclcpp/rclcpp.hpp"
-#include "rclcpp_action/rclcpp_action.hpp"
-#include "rclcpp/subscription_options.hpp"
+//Made by Daegan Brown for ASTRA
+#include "pathfind.h"                       // My functions
 
-#include "std_msgs/msg/string.hpp"
+//ROS2 includes
+#include "rclcpp/rclcpp.hpp"                // General ROS2 stuff
+#include "rclcpp_action/rclcpp_action.hpp"  // ROS2 actions info
+#include "rclcpp/subscription_options.hpp"  // ROS2 subsriber info
+#include "std_msgs/msg/string.hpp"          // Message type for ROS2
 
-#include "astra_auto_interfaces/action/navigate_rover.hpp"
+//openCV shenanigans
+#include <opencv2/opencv.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/aruco.hpp>
+#include <opencv2/videoio.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/objdetect/aruco_detector.hpp>
+#include <opencv2/calib3d.hpp>
+//#include <opencv2/aruco_samples_utlity.hpp>
+//#include <opencv2/objdetect/aruco_dictionary.hpp>
 
 
+//Other packages to include
+#include "astra_auto_interfaces/action/navigate_rover.hpp"      //contains action files and srv files
 
+//*************************************************************************************************
+//Predeclarations
+//*************************************************************************************************
+
+
+//Shorthands and other such things
 using NavigateRover = astra_auto_interfaces::action::NavigateRover;
 using NavigateRoverGoalHandle = rclcpp_action::ServerGoalHandle<NavigateRover>;
 using namespace std::placeholders;
 
 
-std::string imu_bearing;
+//Global Variables
+std::string imu_bearing;                    
 std::string imu_gps;
 
+
+//*************************************************************************************************
+//ROS2 Nodes
+//*************************************************************************************************
+
+
+// Node for subcribing to topics
 class NavigateRoverSubscriberNode : public rclcpp::Node 
 {
 public:
@@ -80,6 +111,7 @@ private:
 
 };
 
+// Node for the action server
 class NavigateRoverServerNode : public rclcpp::Node 
 {
 public:
@@ -163,13 +195,15 @@ private:
         // 4: 1 but only looping once
         // 5: Goes forward. Used for testing. 
         // 6: Search pattern
+        // 7: AruCo Test
+        // 8: Object Detection
         auto message_motors = std_msgs::msg::String();
         auto message_imu = std_msgs::msg::String();
         double current_lat;
         double current_long;
         //double bearing;
-        float currentHeading;
-        float needHeading = 0;
+        //float currentHeading;
+        //float needHeading = 0;
         double needDistance;
         int i_needDistance;
         int i_needHeading;
@@ -202,7 +236,7 @@ private:
                 message_imu.data = "data,getOrientation";
                 publisher_imu->publish(message_imu);
                 usleep(0.5 * microsecond);
-                currentHeading = 0;
+                
                 
 
                 message_imu.data = "data,sendGPS";
@@ -213,12 +247,12 @@ private:
                 current_lat = pathfind.imu_command_gps(imu_gps,1);
                 current_long = pathfind.imu_command_gps(imu_gps,2);
 
-                //needDistance = pathfind.find_distance(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
-                //i_needDistance = needDistance;
-                //RCLCPP_INFO(this->get_logger(), "Remaining distance: '%d'", i_needDistance);
+                needDistance = pathfind.find_distance(gps_lat_target, gps_long_target, current_lat, current_long);
+                i_needDistance = needDistance;
+                RCLCPP_INFO(this->get_logger(), "Remaining distance: '%d'", i_needDistance);
 
 
-                i_needHeading = pathfind.find_facing(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
+                i_needHeading = pathfind.find_facing(gps_lat_target, gps_long_target, current_lat, current_long);
                 //RCLCPP_INFO(this->get_logger(), "Need to head: '%d'", message_motors.data.c_str());
                 
                 std::cout << std::fixed << "Calculated Heading: " << i_needHeading << std::endl << std::endl << std::endl << std::endl;
@@ -279,7 +313,6 @@ private:
                 message_imu.data = "data,getOrientation";
                 publisher_imu->publish(message_imu);
                 usleep(3 * microsecond);
-                currentHeading = 0;
                 for (int i; i<5000; i++)
                 {
                     usleep(1000);
@@ -301,7 +334,7 @@ private:
                 //RCLCPP_INFO(this->get_logger(), "Remaining distance: '%d'", i_needDistance);
 
 
-                i_needHeading = pathfind.find_facing(gps_lat_target, gps_long_target, currentHeading, current_lat, current_long);
+                i_needHeading = pathfind.find_facing(gps_lat_target, gps_long_target, current_lat, current_long);
                 //RCLCPP_INFO(this->get_logger(), "Need to head: '%d'", message_motors.data.c_str());
                 
                 std::cout << std::fixed << "Calculated Heading: " << i_needHeading << std::endl << std::endl << std::endl << std::endl;
@@ -439,6 +472,145 @@ private:
             RCLCPP_INFO(this->get_logger(), "Stopping");
             publisher_motors->publish(message_motors);
         }
+        else if (navigate_type == 7)
+        {
+            std::cout << "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFUUUUUUUUUUUUUUUUUUUU-" << std::endl;
+            int cameraNum;
+            std::cin >> cameraNum;
+            cv::VideoCapture inputVideo(cameraNum);
+            
+            
+            //inputVideo.open(cameraNum);
+            cv::aruco::DetectorParameters detectorParams = cv::aruco::DetectorParameters();
+            cv::aruco::Dictionary dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
+            cv::aruco::ArucoDetector detector(dictionary, detectorParams);
+
+
+
+            //cv::Size S = cv::Size((int) inputVideo.get(cv::CAP_PROP_FRAME_WIDTH),    // Acquire input size
+              //  (int) inputVideo.get(cv::CAP_PROP_FRAME_HEIGHT));
+
+            //cv::VideoWriter writer;
+            //int codec = cv::VideoWriter::fourcc('a', 'v', 'c', '1');
+            //double fps = 15.0;
+            //std::string filename = "footage.mp4";
+            //cv::Size sizeFrame(640,480);
+            //writer.open(filename, codec, fps, sizeFrame, true);
+            //cv::Mat cameraMatrix, distCoeffs;
+            //float markerLength = 0.05;
+
+            //readCameraParameters(cameraParamsFilename, cameraMatrix, distCoeffs);
+
+            //cv::Mat objPoints(4, 1, CV_32FC3);
+            //objPoints.ptr<cv::Vec3f>(0)[0] = cv::Vec3f(-markerLength/2.f, markerLength/2.f, 0);
+            //objPoints.ptr<cv::Vec3f>(0)[1] = cv::Vec3f(markerLength/2.f, markerLength/2.f, 0);
+            //objPoints.ptr<cv::Vec3f>(0)[2] = cv::Vec3f(markerLength/2.f, -markerLength/2.f, 0);
+            //objPoints.ptr<cv::Vec3f>(0)[3] = cv::Vec3f(-markerLength/2.f, -markerLength/2.f, 0);
+
+            cv::Mat image, imageCopy;
+            std::vector<int> ids;
+            std::vector<std::vector<cv::Point2f>> corners, rejected;
+            inputVideo >> image;
+            std::cout << "Video Prepared" << std::endl;
+
+
+            cv::Mat res;
+            std::vector<cv::Mat> spl;
+            cv::VideoWriter outputVideo;    
+            int codec = cv::VideoWriter::fourcc('H', '2', '6', '4');  // select desired codec (must be available at runtime)
+            double fps = 25.0;                          // framerate of the created video stream
+            std::string filename = "./live.mp4";             // name of the output video file
+            outputVideo.open(filename, codec, fps, image.size(), true);
+            // check if we succeeded
+            if (!outputVideo.isOpened()) {
+                std::cerr << "Could not open the output video file for write\n";
+                
+                }
+
+
+
+            std::cout << "Output prepared" << std::endl;
+
+            int iterateIT = 0;
+            while (inputVideo.grab()) 
+                {
+                iterateIT ++;
+                cv::Mat image, imageCopy;
+                inputVideo.retrieve(image);
+                image.copyTo(imageCopy);
+                //std::vector<int> ids;
+                //std::vector<std::vector<cv::Point2f>> corners, rejected;
+                detector.detectMarkers(image, corners, ids, rejected);
+                // if at least one marker detected
+                if (ids.size() > 0)
+                    cv::aruco::drawDetectedMarkers(imageCopy, corners, ids);
+
+                //int nMarkers = corner.size();
+                //std::vector<cv::Vec3d> rvecs(nMarkers), tvecs(nMarkers);
+
+                //Calculate pose for each marker
+                //for (int i = 0; i < nMarkers; i++)
+                //{
+                //   solvePnP(objPoints, corner.at(i), cameraMatrix, distCoeffs, rvecs.at(i), tvecs.at(i));
+                //}
+
+                //Draw Axis for each marker
+                //for (unsigned int i = 0; i < ids.size(); i++)
+                //{
+                //    cv::drawFrameAxes(imageCopy, cameraMatrix, distCoeffs, rvecs[i], tvecs[i], 0.1)
+                //}
+
+                outputVideo.write(imageCopy);
+
+
+
+
+                cv::imshow("out", imageCopy);
+                //inputVideo >> imageCopy;
+                //cv::Mat xframe;
+                //resize(imageCopy, xframe, sizeFrame);
+                //writer.write(xframe);
+
+
+                //split(src, spl);                // process - extract only the correct channel
+                //for (int i =0; i < 3; ++i)
+                //{
+                    
+                //spl[i] = cv::Mat::zeros(S, spl[0].type());
+                //    
+                //}
+                //merge(spl, res);
+
+               // outputVideo.write(imageCopy);
+                //outputVideo.write(res); //save or
+                //outputVideo << res;
+
+                //int waitTime = 1;
+                char key = (char) cv::waitKey(1);
+                if (key == 27)
+                //std::cout << iterateIT << std::endl;
+                //if (iterateIT >= 90)
+                {
+                    break;
+                }
+                
+                
+
+                }
+               
+            //bool isSuccess = imwrite("./MyImage.jpg", imageCopy); //write the image to a file as JPEG 
+            //bool isSuccess = imwrite("D:/MyImage.png", image); //write the image to a file as PNG
+            //if (isSuccess == false)
+            //{
+            //std::cout << "Failed to save the image" << std::endl;
+            //std::cin.get(); //wait for a key press
+            //}
+
+            std::cout << "Finished filming!" << std::endl;
+            inputVideo.release();
+            //writer.release();
+        }   
+
 
         // Pause before stopping 
 
@@ -499,8 +671,22 @@ private:
     rclcpp_action::Server<NavigateRover>::SharedPtr navigate_rover_server_;
 };
 
+//*************************************************************************************************
+// Main
+//*************************************************************************************************
 int main(int argc, char **argv)
 {
+    //Generates AruCo tags
+    cv::Mat markerImage;
+    cv::aruco::Dictionary dictionary1 = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
+    cv::aruco::generateImageMarker(dictionary1, 1, 200, markerImage, 1);
+    cv::imwrite("marker1.png", markerImage);
+
+    //Camera stuff for OpenCV
+    
+
+
+
     rclcpp::init(argc, argv);
     auto node1 = std::make_shared<NavigateRoverServerNode>(); 
     auto node2 = std::make_shared<NavigateRoverSubscriberNode>();

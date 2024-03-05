@@ -18,6 +18,11 @@ Version History
         Sends more feedback to console on what mode you've selected
     1.2
         Loops GPS locating, until within 0.0000001 lat and long of target.
+    1.3
+        Fixed logic of looping, and added another node to spin so that it can accept 
+        info while actions are being done.
+    1.4 
+        Added search pattern functionality
 
 Contents:
     directory: include
