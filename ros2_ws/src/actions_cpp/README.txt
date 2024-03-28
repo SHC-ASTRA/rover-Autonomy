@@ -24,12 +24,14 @@ Version History
     1.4 
         Added search pattern functionality
 
-Contents:
-    directory: include
-        Contains ???? probably CMake stuff ???
-    directory: src
-        Contains the source files. C++ and header files
-    File: CMakeLists.txt
-        This is the startup information for CMake when compiling the package
-    File: packages.xml
-        Helps with package startup, giving depencencies and libraries
+    How to run:
+    Once downloading from the github, navigate to rover-Autonomy/ros2_ws
+        cd rover-Autonomy/ros2_ws
+    Then use build the files.
+        colcon build
+    Once they are built and ros2 humble is running, you can run the server
+    and then the client with the following
+        ros2 run actions_cpp navigate_rover_server
+        ros2 run actions_cpp navigate_rover_client
+
+    When running the client, 
