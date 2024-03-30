@@ -1,7 +1,7 @@
 //***********************************************
 //rover-Autonomy Server
 //runs commands from the client
-//Last edited Feb 29, 2024
+//Last edited March 30, 2024
 //Version: 1.5
 //*************************************************************************************************
 //Maintained by: Daegan Brown
@@ -29,15 +29,13 @@
 #include "std_msgs/msg/string.hpp"          // Message type for ROS2
 
 //openCV shenanigans
-#include <opencv2/opencv.hpp>
-#include <opencv2/core.hpp>
-#include <opencv2/aruco.hpp>
-#include <opencv2/videoio.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/objdetect/aruco_detector.hpp>
-#include <opencv2/calib3d.hpp>
-//#include <opencv2/aruco_samples_utlity.hpp>
-//#include <opencv2/objdetect/aruco_dictionary.hpp>
+#include <opencv2/opencv.hpp>                   //
+#include <opencv2/core.hpp>                     //
+#include <opencv2/aruco.hpp>                    //
+#include <opencv2/videoio.hpp>                  //
+#include <opencv2/highgui.hpp>                  //
+#include <opencv2/objdetect/aruco_detector.hpp> //
+#include <opencv2/calib3d.hpp>                  //
 
 
 //Other packages to include
