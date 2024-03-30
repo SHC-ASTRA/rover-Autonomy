@@ -10,7 +10,6 @@ This project is designed for the 2024 URC competition, specifically for the auto
    - ROS2 Humble
    - Colcon
    - OpenCV
-   - Git
 4. Recommended Programs
 5. How to Use
 6. Common Problems
@@ -67,9 +66,46 @@ sudo apt install python3-colcon-common-extension
 ```
 
 ## OpenCV
+OpenCV is used for ARUCO detection and other small but complicated tasks. These steps will take a while, so make sure your device has good internet and is plugged in before starting. This informatin is on the [OpenCV Website](https://docs.opencv.org/4.x/d7/d9f/tutorial_linux_install.html), however I found the documentation formatting poor, 
 
-## Git
+These are the prerequisites for this process and for OpenCV. 
 
+```
+sudo apt update && sudo apt install -y cmake g++ wget unzip
+```
+
+You need to then download the source files, and unpack them. 
+
+```
+wget -O opencv.zip https://github.com/opencv/opencv/archive/4.x.zip
+wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/4.x.zip
+unzip opencv.zip
+unzip opencv_contrib.zip
+```
+
+Create a build directory and switch into it
+
+```
+mkdir -p build && cd build
+```
+
+Configure the build
+
+```
+cmake -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib-4.x/modules ../opencv-4.x
+```
+
+Then build
+
+```
+cmake --build .
+```
+
+Finally, after that has finished, install
+
+```
+sudo make install
+```
 
 # Recommended Programs
 
@@ -122,7 +158,7 @@ Once the client has been started, it will ask you what input type you would like
 
 # Author
 
-Name: Daegan M Brown
+Name: Daegan Brown
 
 Email: daeganbrown03@gmail.com
 
@@ -130,4 +166,8 @@ Phone: 423-475-4384
 
 # Maintainer
 
-Currently also Daegan. See above
+Name: Daegan Brown
+
+Email: daeganbrown03@gmail.com
+
+Phone: 423-475-4384
