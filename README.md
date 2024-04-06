@@ -16,7 +16,7 @@ This project is designed for the 2024 URC competition, specifically for the auto
 7. Author 
 8. Maintainer
 
-# Requirments 
+# Requirements 
 Before downloading anything, it is a good idea to make sure your system is up to date and that all software you are using is as well. If you are on Ubuntu/Debian, the following commands will do so. 
 
 All commands in this document will be for Ubuntu.
@@ -119,6 +119,12 @@ sudo snap install --classic code
 # How to Use
 The purpose of this program is to, as stated above, run the ASTRA Rover autonomously within the [URC](https://urc.marssociety.org/home/about-urc) guidlines for the autonomous mission, made first for the 2024 mission, but modular to fit future missions.
 
+Before running this program, you will have to build it, like all ROS packages. Once downloaded, navigate to the `/rover-Autonomy/` directory, which should contain this README.md file and one directory called `ros2_ws`. Navigate to this directory, which will contain a `src` directory and a png file. Then use the following command to build. 
+
+```
+colcon build
+```
+
 There are two parts to running this project, one is to run the server, and the other is to run the client. Once the server is started, you do not need to touch it again. The client, however, is what is used to communicate with the server. A new command requires a new client.
 
 The Server is run with the command
@@ -133,7 +139,7 @@ The Client is run with the command
 ros2 run actions_cpp navigate_rover_client
 ```
 
-Once the client has been started, it will ask you what input type you would like to use. This is the type of action you wish the rover to perform. The options are listed below. After the input type, there will be two more inputs, which are parameters for the function, which are listed below as well in the format (First input, Second input). 
+Once the client has been started, it will ask you what input type you would like to use. This is the type of action you wish the rover to perform, inputing a number. The options are listed below. After the input type, there will be two more inputs, which are parameters for the function, which are listed below as well in the format (First input, Second input). 
 
 1. Go to GPS Point
    - (Target Latitude, Target Longitude)

@@ -21,12 +21,6 @@ find_package( OpenCV REQUIRED )
 
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
-add_executable(count_until_server src/count_until_server.cpp)
-ament_target_dependencies(count_until_server rclcpp rclcpp_action astra_auto_interfaces)
-
-add_executable(count_until_client src/count_until_client.cpp)
-ament_target_dependencies(count_until_client rclcpp rclcpp_action astra_auto_interfaces)
-
 add_executable(navigate_rover_server src/astra_auto_server.cpp)
 #target_link_libraries( navigate_rover_server ${OpenCV_LIBS} )
 ament_target_dependencies(navigate_rover_server rclcpp rclcpp_action std_msgs astra_auto_interfaces )
@@ -40,8 +34,6 @@ ament_target_dependencies(navigate_rover_client rclcpp rclcpp_action astra_auto_
 
 
 install(TARGETS 
-  count_until_server
-  count_until_client
   navigate_rover_server
   navigate_rover_client
   DESTINATION lib/${PROJECT_NAME}/

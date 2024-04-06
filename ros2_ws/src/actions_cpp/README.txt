@@ -23,15 +23,7 @@ Version History
         info while actions are being done.
     1.4 
         Added search pattern functionality
+    1.5 
+        Proper github README.md was added, along with cleaning
+        up variables and functions
 
-    How to run:
-    Once downloading from the github, navigate to rover-Autonomy/ros2_ws
-        cd rover-Autonomy/ros2_ws
-    Then use build the files.
-        colcon build
-    Once they are built and ros2 humble is running, you can run the server
-    and then the client with the following
-        ros2 run actions_cpp navigate_rover_server
-        ros2 run actions_cpp navigate_rover_client
-
-    When running the client, 
