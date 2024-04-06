@@ -12,9 +12,9 @@
 //*************************************************************************************************
 
 //C++ includes, normal
-#include <memory>                           //
-#include <chrono>                           //
-#include <functional>                       //
+#include <memory>                           // 
+#include <chrono>                           // 
+#include <functional>                       // 
 #include <string>                           // String type variable
 #include <unistd.h>                         // usleep 
 #include <stdio.h>
@@ -84,7 +84,6 @@ private:
         std::string delimiter = ",";
             size_t pos = 0;
             std::string token;
-            std::string token1;
             std::string scommand = command.c_str();
             pos = scommand.find(delimiter);
             token = scommand.substr(0, pos);
@@ -167,6 +166,7 @@ private:
         const std::shared_ptr<NavigateRoverGoalHandle> goal_handle)
     {
         // Set microsecond values for usleep command
+        // DEBUG change variable names
         unsigned int microsecond = 1000000;
 
         // Get Request from goal
@@ -182,6 +182,7 @@ private:
         
         // Switch Statement determining what type of action is being asked of the 
         // rover. 
+        // 0: Stops rover
         // 1: Simply go to GPS coordinates, stop, and signal.
         // 2: Go and search target area for aruco tags
         // 3: Go and search target area for objects
@@ -203,7 +204,7 @@ private:
         int iterate = 0;
 
 
-        //Turn LEDs blue blue
+        //Turn LEDs blue 
         message_imu.data = "led_set,300,0,0";
         publisher_imu->publish(message_imu);
 
@@ -226,9 +227,6 @@ private:
             while (iterate == 0)
             {
                 
-                //usleep(15 * microsecond);
-                
-                
                 
                 message_imu.data = "data,getOrientation";
                 publisher_imu->publish(message_imu);
@@ -240,7 +238,6 @@ private:
                 publisher_imu->publish(message_imu);
                 usleep(0.5 * microsecond);
                 
-                std::cout << gps_string << std::endl;  
                 current_lat = imu_command_gps(gps_string,1);
                 current_long = imu_command_gps(gps_string,2);
 
@@ -374,7 +371,7 @@ private:
             usleep(15.0 * microsecond);
         }
         
-        //Square search patter, mostly for SAR filming
+        // Rectilinear search pattern, mostly for SAR filming
         else if (navigate_type == 6)
         {
             std::cout << "Selected Square Search Pattern" << std::endl;

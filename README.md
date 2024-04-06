@@ -62,7 +62,7 @@ Now ROS2 has been downloaded. Remember, to actually use ROS in a terminal, you h
 Colcon is used for building ros2 packages, and is quick to install. The following command is all that you need if you are running Ubuntu/Debian, otherwise check the [ROS2 Website](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html) for information on how to download.
 
 ```
-sudo apt install python3-colcon-common-extension
+sudo apt install python3-colcon-common-extensions
 ```
 
 ## OpenCV

@@ -126,7 +126,6 @@ double imu_command_gps(std::string command, int choose)
     if (choose == 1)
     {
         scommand.erase(pos + delimiter.length(), (scommand.length()));
-        std::cout << scommand << std::endl;  //remove for final 
         command = scommand;   
         double latitude = std::stod(scommand);
         std::cout << latitude;
@@ -138,7 +137,6 @@ double imu_command_gps(std::string command, int choose)
         pos = scommand.find(delimiter); 
         scommand.erase(pos  + delimiter.length(), (scommand.length() - 1));
         command = scommand;
-        std::cout << scommand << std::endl;    //remove for final 
         double longitude = std::stod(scommand); 
         std::cout << longitude; 
         return longitude;
