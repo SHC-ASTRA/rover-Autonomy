@@ -1,8 +1,8 @@
 //***********************************************
 //rover-Autonomy server client
 //Sends instructions to the server
-//Last edited Feb 16, 2024
-//Version: 1.2
+//Last edited April 6, 2024
+//Version: 1.3
 //***********************************************
 //Maintained by: Daegan Brown
 //Number: 423-475-4384
