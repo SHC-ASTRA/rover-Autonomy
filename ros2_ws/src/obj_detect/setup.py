@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'talker  =obj_detect.obj_detect:main',
         ],
     },
 )

@@ -21,7 +21,7 @@ from std_msgs.msg import String
 class astra_auto_obj(Node):
 
     def __init__(self):
-        super().__init__('astra_auto_obj')
+        super().__init__('obj_detector')
         self.publisher_ = self.create_publisher(String, '/astra/auto/object', 10)
         timer_period = 0.5  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
@@ -38,14 +38,14 @@ class astra_auto_obj(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    obj_det = astra_auto_obj()
+    obj_detector = astra_auto_obj()
 
-    rclpy.spin(obj_det)
+    rclpy.spin(obj_detecetor)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
-    obj_det.destroy_node()
+    obj_detector.destroy_node()
     rclpy.shutdown()
 
 
