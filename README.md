@@ -6,17 +6,18 @@ This project is designed for the 2024 URC competition, specifically for the auto
 # Table of Contents
 1. Title
 2. Table of Requirements
-3. Requirments
+3. Software Requirments
    - ROS2 Humble
    - Colcon
    - OpenCV
-4. Recommended Programs
-5. How to Use
-6. Common Problems
-7. Author 
-8. Maintainer
+4. Hardware Requirements
+5. Recommended Programs
+6. How to Use
+7. Common Problems
+8. Author 
+9. Maintainer
 
-# Requirements 
+# Software Requirements 
 Before downloading anything, it is a good idea to make sure your system is up to date and that all software you are using is as well. If you are on Ubuntu/Debian, the following commands will do so. 
 
 All commands in this document will be for Ubuntu.
@@ -106,6 +107,8 @@ Finally, after that has finished, install
 ```
 sudo make install
 ```
+# Hardware Requirements 
+Functioning Computer.
 
 # Recommended Programs
 

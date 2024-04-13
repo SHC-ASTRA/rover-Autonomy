@@ -1,14 +1,15 @@
 //***********************************************
 //rover-Autonomy server client
 //Sends instructions to the server
-//Last edited April 6, 2024
-//Version: 1.3
+//Last edited April 11, 2024
+//Version: 1.4
 //***********************************************
 //Maintained by: Daegan Brown
 //Number: 423-475-4384
 //Email: daeganbrown03@gmail.com
 //***********************************************
 #include <iostream>
+#include <string>
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
@@ -44,6 +45,8 @@ public:
         auto options = rclcpp_action::Client<NavigateRover>::SendGoalOptions();
         options.result_callback = 
             std::bind(&NavigateRoverClientNode::goal_result_callback, this, _1);
+        options.feedback_callback = 
+            std::bind(&NavigateRoverClientNode::goal_feedback_callback, this, _1, _2);
 
         // Send the goal
         RCLCPP_INFO(this->get_logger(), "Sending a goal");
@@ -56,6 +59,16 @@ private:
     {
         int final_result = result.result->final_result;
         RCLCPP_INFO(this->get_logger(), "Result: %d", final_result);
+    }
+
+    // Callback for Feedback
+    void goal_feedback_callback(const NavigateRoverGoalHandle::SharedPtr &goal_handle, \
+    const std::shared_ptr<const NavigateRover::Feedback> feedback)
+    {
+        (void)goal_handle;
+        int c_goal = feedback->c_goal;
+        RCLCPP_INFO(this->get_logger(), "Recieved Feedback %d",c_goal);
+    
     }
 
     rclcpp_action::Client<NavigateRover>::SharedPtr navigate_rover_client_;

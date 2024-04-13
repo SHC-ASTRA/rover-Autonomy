@@ -192,6 +192,7 @@ private:
         // 8: Object Detection
         auto message_motors = std_msgs::msg::String();
         auto message_imu = std_msgs::msg::String();
+        auto feedback = std::make_shared<NavigateRover::Feedback>();
         double current_lat;
         double current_long;
         //double bearing;
@@ -214,8 +215,26 @@ private:
 
         //Use first input to decide where to go. Switch statement could work
         //better, TBD
-        if (navigate_type == 1)
+        
+        if (navigate_type == 0)
         {
+            //FEEDBACK for Basestation widgets
+            feedback->c_goal = 0;
+            goal_handle->publish_feedback(feedback);
+
+
+            message_motors.data = "ctrl,0,0";
+            RCLCPP_INFO(this->get_logger(), "Stopping");
+            publisher_control->publish(message_motors);
+        }
+
+        else if (navigate_type == 1)
+        {
+            //FEEDBACK for Basestation Widgets
+            feedback->c_goal = 0;
+            goal_handle->publish_feedback(feedback);
+
+
             //Make Rover face North, announce chosen task,
             message_imu.data = "auto,turningTo,15000,0";
             publisher_control->publish(message_imu);
@@ -225,8 +244,7 @@ private:
             //target until it is within a half meter. 
             while (iterate == 0)
             {
-                
-                
+
                 message_imu.data = "data,getOrientation";
                 publisher_control->publish(message_imu);
                 usleep(0.5 * second);
@@ -240,10 +258,12 @@ private:
                 current_lat = imu_command_gps(gps_string,1);
                 current_long = imu_command_gps(gps_string,2);
 
+                //Feedback
+
                 needDistance = find_distance(gps_lat_target, gps_long_target, current_lat, current_long);
                 i_needDistance = needDistance;
                 RCLCPP_INFO(this->get_logger(), "Remaining distance: '%d'", i_needDistance);
-
+                //Feedback
 
                 i_needHeading = find_facing(gps_lat_target, gps_long_target, current_lat, current_long);
                 
@@ -289,10 +309,165 @@ private:
             std::cout << "Arrived at location!";           
             
         }
+
+        else if (navigate_type == 2)
+        {
+            //FEEDBACK for Basestation Widgets
+            feedback->c_goal = 0;
+            goal_handle->publish_feedback(feedback);
+
+            //First step is to navigate to the starting point of the path. 
+            //For now, 10 m south and 10 m west of the path
+            while (iterate == 0)
+            {
+                double adjusted_lat_target = gps_lat_target - 0.0001; //DEBUG REMOVE FOR NAV 1
+                double adjusted_long_target = gps_long_target - 0.0001;
+                message_imu.data = "data,getOrientation";
+                publisher_control->publish(message_imu);
+                usleep(0.5 * second);
+                
+                
+
+                message_imu.data = "data,sendGPS";
+                publisher_control->publish(message_imu);
+                usleep(0.5 * second);
+                
+                current_lat = imu_command_gps(gps_string,1);
+                current_long = imu_command_gps(gps_string,2);
+
+                //Feedback
+
+                needDistance = find_distance(adjusted_lat_target, adjusted_long_target, \
+                    current_lat, current_long);
+                i_needDistance = needDistance;
+                RCLCPP_INFO(this->get_logger(), "Remaining distance: '%d'", i_needDistance);
+                //Feedback
+
+                i_needHeading = find_facing(adjusted_lat_target, adjusted_long_target, \
+                    current_lat, current_long);
+                
+                
+                std::cout << std::fixed << "Calculated Heading: " << i_needHeading << std::endl << std::endl << std::endl << std::endl;
+
+
+                message_imu.data = "auto,turningTo,15000," + std::to_string(i_needHeading);
+                publisher_control->publish(message_imu);
+                usleep(3.5 * second);
+
+                
+                rover_command = "ctrl,-0.6,-0.6";  
+                message_motors.data = rover_command;
+                RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message_motors.data.c_str());
+                publisher_control->publish(message_motors);
+                usleep(1.5 * second);
+                
+
+                rover_command = "ctrl,0,0";  
+                message_motors.data = rover_command;
+                RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message_motors.data.c_str());
+                publisher_control->publish(message_motors);
+
+                message_imu.data = "data,getGPS";
+                publisher_control->publish(message_imu);
+                usleep(100000);
+                current_lat = imu_command_gps(gps_string,1);
+                current_long = imu_command_gps(gps_string,2);
+
+                if ((abs(current_lat - gps_lat_target) <= 0.00002) && \
+                    ((abs(current_long - gps_long_target) <= 0.00002) ))
+                {
+                    
+                    iterate++;
+                }
+                
+            }
+
+        }
+
+        else if (navigate_type == 3)
+        {
+            //FEEDBACK for Basestation Widgets
+            feedback->c_goal = 0;
+            goal_handle->publish_feedback(feedback);
+
+            //First step is to navigate to the starting point of the path. 
+            //For now, 10 m south and 10 m west of the path
+            while (iterate == 0)
+            {
+                double adjusted_lat_target = gps_lat_target - 0.0001; //DEBUG REMOVE FOR NAV 1
+                double adjusted_long_target = gps_long_target - 0.0001;
+                message_imu.data = "data,getOrientation";
+                publisher_control->publish(message_imu);
+                usleep(0.5 * second);
+                
+                
+
+                message_imu.data = "data,sendGPS";
+                publisher_control->publish(message_imu);
+                usleep(0.5 * second);
+                
+                current_lat = imu_command_gps(gps_string,1);
+                current_long = imu_command_gps(gps_string,2);
+
+                //Feedback
+
+                needDistance = find_distance(adjusted_lat_target, adjusted_long_target, \
+                    current_lat, current_long);
+                i_needDistance = needDistance;
+                RCLCPP_INFO(this->get_logger(), "Remaining distance: '%d'", i_needDistance);
+                //Feedback
+
+                i_needHeading = find_facing(adjusted_lat_target, adjusted_long_target, \
+                    current_lat, current_long);
+                
+                
+                std::cout << std::fixed << "Calculated Heading: " << i_needHeading << std::endl << std::endl << std::endl << std::endl;
+
+
+                message_imu.data = "auto,turningTo,15000," + std::to_string(i_needHeading);
+                publisher_control->publish(message_imu);
+                usleep(3.5 * second);
+
+                
+                rover_command = "ctrl,-0.6,-0.6";  
+                message_motors.data = rover_command;
+                RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message_motors.data.c_str());
+                publisher_control->publish(message_motors);
+                usleep(1.5 * second);
+                
+
+                rover_command = "ctrl,0,0";  
+                message_motors.data = rover_command;
+                RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message_motors.data.c_str());
+                publisher_control->publish(message_motors);
+
+                message_imu.data = "data,getGPS";
+                publisher_control->publish(message_imu);
+                usleep(100000);
+                current_lat = imu_command_gps(gps_string,1);
+                current_long = imu_command_gps(gps_string,2);
+
+                if ((abs(current_lat - gps_lat_target) <= 0.00002) && \
+                    ((abs(current_long - gps_long_target) <= 0.00002) ))
+                {
+                    
+                    iterate++;
+                }
+                
+            }
+
+
+        }
+
+
         //This is a test loop. Same code as 1, the only difference is instead of drving until it reaches the point, 
         //It faces it once, drives towards it once, then is done. 
         else if (navigate_type == 4)
         {
+            //FEEDBACK for Basestation Widgets
+            feedback->c_goal = 0;
+            goal_handle->publish_feedback(feedback);
+
             std::cout << "Selected GPS targeting, but once" << std::endl;
             while (iterate == 0)
             {
@@ -349,6 +524,10 @@ private:
         }
         else if (navigate_type == 5)
         {
+            //FEEDBACK for Basestation Widgets
+            feedback->c_goal = 0;
+            goal_handle->publish_feedback(feedback);
+
             rover_command = "ctrl,-.50,-.50";
             message_motors.data = rover_command;
             RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message_motors.data.c_str());
@@ -371,6 +550,10 @@ private:
         // Rectilinear search pattern, mostly for SAR filming
         else if (navigate_type == 6)
         {
+            //FEEDBACK for Basestation Widgets
+            feedback->c_goal = 0;
+            goal_handle->publish_feedback(feedback);
+
             std::cout << "Selected Square Search Pattern" << std::endl;
             message_imu.data = "led_set,303,0,0";
             publisher_control->publish(message_imu);
@@ -421,14 +604,12 @@ private:
                 publisher_control->publish(message_motors);
             }
         }
-        else if (navigate_type == 0)
-        {
-            message_motors.data = "ctrl,0,0";
-            RCLCPP_INFO(this->get_logger(), "Stopping");
-            publisher_control->publish(message_motors);
-        }
         else if (navigate_type == 7)
         {
+            //FEEDBACK for Basestation Widgets
+            feedback->c_goal = 0;
+            goal_handle->publish_feedback(feedback);
+
             std::cout << "Looking For ARCUO" << std::endl;
             int cameraNum;
             std::cin >> cameraNum;
