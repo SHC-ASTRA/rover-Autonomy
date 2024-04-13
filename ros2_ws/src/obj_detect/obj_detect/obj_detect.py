@@ -40,7 +40,7 @@ def main(args=None):
 
     obj_detector = astra_auto_obj()
 
-    rclpy.spin(obj_detecetor)
+    rclpy.spin(obj_detector)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
