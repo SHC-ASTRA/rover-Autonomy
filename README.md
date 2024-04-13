@@ -110,6 +110,8 @@ sudo make install
 # Hardware Requirements 
 Functioning Computer.
 
+To use depth sensor functions, need to have a D435i camera.
+
 # Recommended Programs
 
 ## VSCode
