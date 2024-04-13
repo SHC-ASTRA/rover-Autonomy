@@ -109,14 +109,44 @@ sudo make install
 ```
 
 ## Depth Modules/SLAM
-Using the D435i camera lets us use many libaries, but first requires installing dependencies. First is [Librealsense](https://github.com/IntelRealSense/realsense-ros libaries, which are installed easily enough.)
+Using the D435i camera lets us use many libaries, but first requires installing dependencies. First is [Librealsense](https://github.com/IntelRealSense/realsense-ros) libaries, which are installed easily enough.
+
 
 ```
 sudo apt install ros-humble-librealsense2*
 ```
 
+
+
 Then you have to make a ROS2 Wrapper for it. This requires downloading the package into ros2_ws/src. 
 
+```
+cd ~/rover-Autonomy/ros2_ws/src
+git clone https://github.com/IntelRealSense/realsense-ros.git -b ros2-development
+cd ~/rover-Autonomy/ros2_ws
+```
+
+The other dependencies include python and rosdep shenanigans
+
+```
+sudo apt-get install python3-rosdep -y
+rosdep install -i --from-path src --rosdistro $ROS_DISTRO --skip-keys=librealsense2 -y
+```
+
+Then build, you should be in rover-Autonomy/ros2_ws, so you want to build. 
+
+```
+colcon build
+```
+
+Then source the environment.
+
+```
+ROS_DISTRO=humble
+source /opt/ros/$ROS_DISTRO/setup.bash
+cd ~/rover-Autonomy/ros2_2s
+. install/local_setup.bash
+```
 
 # Hardware Requirements 
 Functioning Computer.
