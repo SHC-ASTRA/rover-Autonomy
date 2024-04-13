@@ -107,6 +107,16 @@ Finally, after that has finished, install
 sudo make install
 ```
 
+## Depth Modules/SLAM
+Using the D435i camera lets us use many libaries, but first requires installing dependencies. First is [Librealsense](https://github.com/IntelRealSense/realsense-ros libaries, which are installed easily enough.)
+
+```
+sudo apt install ros-humble-librealsense2*
+```
+
+Then you have to make a ROS2 Wrapper for it. This requires downloading the package into ros2_ws/src. 
+
+
 # Recommended Programs
 
 ## VSCode
