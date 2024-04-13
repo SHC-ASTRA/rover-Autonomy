@@ -5,7 +5,7 @@ This project is designed for the 2024 URC competition, specifically for the auto
 
 # Table of Contents
 1. Title
-2. Table of Requirements
+2. Table of Contents
 3. Software Requirments
    - ROS2 Humble
    - Colcon
