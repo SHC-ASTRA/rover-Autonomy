@@ -151,6 +151,8 @@ cd ~/rover-Autonomy/ros2_2s
 # Hardware Requirements 
 Functioning Computer.
 
+To use as intended, a rover.
+
 To use depth sensor functions, need to have a D435i camera.
 
 # Recommended Programs
