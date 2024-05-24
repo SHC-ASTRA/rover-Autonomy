@@ -41,6 +41,7 @@
 //Other packages to include
 #include "astra_auto_interfaces/action/navigate_rover.hpp"  //contains action files and srv files
 
+
 //*************************************************************************************************
 //Predeclarations
 //*************************************************************************************************
@@ -71,7 +72,12 @@ public:
     {
       navigate_rover_subscriber_ = this->create_subscription<std_msgs::msg::String>(
       "astra/core/feedback", 10, std::bind(&NavigateRoverSubscriberNode::topic_callback, this, _1));
+
+      navigate_rover_subscriber_ = this->create_subscription<std_msgs::msg::String>(
+      "astra/auto/depth", 10, std::bind(&NavigateRoverSubscriberNode::topic_callback, this, _1));
+    
     }
+
 private:
     void topic_callback(const std_msgs::msg::String & msg) 
     {
