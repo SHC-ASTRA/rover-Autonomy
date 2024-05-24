@@ -133,8 +133,8 @@ public:
             "astra/core/control", 10);
         
         //Creating a publisher that asks for imu data
-        publisher_imu = this->create_publisher<std_msgs::msg::String>(
-            "astra/core/control", 10);
+        publisher_feedback = this->create_publisher<std_msgs::msg::String>(
+            "astra/auto/feedback", 10);
         
     }
     
@@ -204,7 +204,7 @@ private:
         // 7: AruCo Test
         // 8: Object Detection
         auto message_motors = std_msgs::msg::String();
-        auto message_imu = std_msgs::msg::String();
+        auto message_feedback = std_msgs::msg::String();
         double current_lat;
         double current_long;
         //double bearing;
@@ -217,12 +217,12 @@ private:
 
 
         //Turn LEDs blue 
-        message_imu.data = "led_set,300,0,0";
-        publisher_imu->publish(message_imu);
+        message_motors.data = "led_set,300,0,0";
+        publisher_motors->publish(message_motors);
 
         //Request GPS data from Core, then wait 3 seconds.
-        message_imu.data = "data,sendGPS";
-        publisher_imu->publish(message_imu);
+        message_motors.data = "data,sendGPS";
+        publisher_motors->publish(message_motors);
         usleep(3 * microsecond);
 
         //Use first input to decide where to go. Switch statement could work
@@ -230,8 +230,8 @@ private:
         if (navigate_type == 1)
         {
             //Make Rover face North, announce chosen task,
-            message_imu.data = "auto,turningTo,15000,0";
-            publisher_imu->publish(message_imu);
+            message_motors.data = "auto,turningTo,15000,0";
+            publisher_motors->publish(message_motors);
             std::cout << "Selected GPS targeting" << std::endl;
 
             //This loop gets the rover to continually get closer to the GPS 
@@ -240,14 +240,14 @@ private:
             {
                 
                 
-                message_imu.data = "data,getOrientation";
-                publisher_imu->publish(message_imu);
+                message_motors.data = "data,getOrientation";
+                publisher_motors->publish(message_motors);
                 usleep(0.5 * microsecond);
                 
                 
 
-                message_imu.data = "data,sendGPS";
-                publisher_imu->publish(message_imu);
+                message_motors.data = "data,sendGPS";
+                publisher_motors->publish(message_motors);
                 usleep(0.5 * microsecond);
                 
                 current_lat = imu_command_gps(gps_string,1);
@@ -264,8 +264,8 @@ private:
                 std::cout << std::fixed << "Calculated Heading: " << i_needHeading << std::endl << std::endl << std::endl << std::endl;
 
 
-                message_imu.data = "auto,turningTo,15000," + std::to_string(i_needHeading);
-                publisher_imu->publish(message_imu);
+                message_motors.data = "auto,turningTo,15000," + std::to_string(i_needHeading);
+                publisher_motors->publish(message_motors);
                 usleep(3.5 * microsecond);
 
                 
@@ -281,8 +281,8 @@ private:
                 RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message_motors.data.c_str());
                 publisher_motors->publish(message_motors);
 
-                message_imu.data = "data,getGPS";
-                publisher_imu->publish(message_imu);
+                message_motors.data = "data,getGPS";
+                publisher_motors->publish(message_motors);
                 usleep(100000);
                 current_lat = imu_command_gps(gps_string,1);
                 current_long = imu_command_gps(gps_string,2);
@@ -296,8 +296,8 @@ private:
                 
             }
              
-            message_imu.data = "led_set,0,0,300";
-            publisher_imu->publish(message_imu);
+            message_motors.data = "led_set,0,0,300";
+            publisher_motors->publish(message_motors);
             RCLCPP_INFO(this->get_logger(), "Arrived at location"); 
             std::cout << "Arrived at location!";           
             
@@ -309,23 +309,23 @@ private:
             std::cout << "Selected GPS targeting, but once" << std::endl;
             while (iterate == 0)
             {
-                message_imu.data = "auto,turningTo,15000,0";
+                message_motors.data = "auto,turningTo,15000,0";
                 
-                publisher_imu->publish(message_imu);
+                publisher_motors->publish(message_motors);
                 //usleep(15 * microsecond);
                 
                 
                 
-                message_imu.data = "data,getOrientation";
-                publisher_imu->publish(message_imu);
+                message_motors.data = "data,getOrientation";
+                publisher_motors->publish(message_motors);
                 usleep(3 * microsecond);
                 for (int i; i<5000; i++)
                 {
                     usleep(1000);
                 }
 
-                message_imu.data = "data,sendGPS";
-                publisher_imu->publish(message_imu);
+                message_motors.data = "data,sendGPS";
+                publisher_motors->publish(message_motors);
                 //usleep(3 * microsecond);
                 for (int i; i<5000; i++)
                 {
@@ -342,8 +342,8 @@ private:
                 std::cout << std::fixed << "Calculated Heading: " << i_needHeading << std::endl << std::endl << std::endl << std::endl;
 
 
-                message_imu.data = "auto,turningTo,15000," + std::to_string(i_needHeading);
-                publisher_imu->publish(message_imu);
+                message_motors.data = "auto,turningTo,15000," + std::to_string(i_needHeading);
+                publisher_motors->publish(message_motors);
                 usleep(15 * microsecond);
 
                 rover_command = "ctrl,0,0";  
@@ -351,8 +351,8 @@ private:
                 RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message_motors.data.c_str());
                 publisher_motors->publish(message_motors);
 
-                message_imu.data = "data,getGPS";
-                publisher_imu->publish(message_imu);
+                message_motors.data = "data,getGPS";
+                publisher_motors->publish(message_motors);
                 usleep(100000);
                 current_lat = imu_command_gps(gps_string,1);
                 current_long = imu_command_gps(gps_string,2);
@@ -378,8 +378,8 @@ private:
 
 
             rover_command = "auto,turningTo,15000,180";
-            message_imu.data = rover_command;
-            publisher_imu->publish(message_imu);
+            message_motors.data = rover_command;
+            publisher_motors->publish(message_motors);
             usleep(15.0 * microsecond);
         }
         
@@ -387,15 +387,15 @@ private:
         else if (navigate_type == 6)
         {
             std::cout << "Selected Square Search Pattern" << std::endl;
-            message_imu.data = "led_set,303,0,0";
-            publisher_imu->publish(message_imu);
+            message_motors.data = "led_set,303,0,0";
+            publisher_motors->publish(message_motors);
             RCLCPP_INFO(this->get_logger(), "Begining Search");
             //
             for (int j = 0; j < gps_lat_target; j++)
             {
                 //Rover faces North
-                message_imu.data = "auto,turningTo,15000,350";
-                publisher_imu->publish(message_imu);
+                message_motors.data = "auto,turningTo,15000,350";
+                publisher_motors->publish(message_motors);
                 usleep(5 * microsecond);
 
                 //Begins driving forward at 40% speed
@@ -406,8 +406,8 @@ private:
                 message_motors.data = "ctrl,0.0,0.0";
                 publisher_motors->publish(message_motors);
                 //Rover faces East
-                message_imu.data = "auto,turningTo,15000,80";
-                publisher_imu->publish(message_imu);
+                message_motors.data = "auto,turningTo,15000,80";
+                publisher_motors->publish(message_motors);
                 usleep(5 * microsecond);
 
                 //Rover moves forward for a second before stopping againt
@@ -417,8 +417,8 @@ private:
                 message_motors.data = "ctrl,0.0,0.0";
                 publisher_motors->publish(message_motors);
                 //Rover faces South and drives that way for the same amount of time before stopping
-                message_imu.data = "auto,turningTo,15000,170";
-                publisher_imu->publish(message_imu);
+                message_motors.data = "auto,turningTo,15000,170";
+                publisher_motors->publish(message_motors);
                 usleep(5 * microsecond);
                 message_motors.data = "ctrl,-0.4,-0.4";
                 publisher_motors->publish(message_motors);
@@ -426,8 +426,8 @@ private:
                 message_motors.data = "ctrl,0.0,0.0";
                 publisher_motors->publish(message_motors);
                 //Faces East again, moves forward one second, and stops the loop
-                message_imu.data = "auto,turningTo,15000,80";
-                publisher_imu->publish(message_imu);
+                message_motors.data = "auto,turningTo,15000,80";
+                publisher_motors->publish(message_motors);
                 usleep(5 * microsecond);
                 message_motors.data = "ctrl,-0.4,-0.4";
                 publisher_motors->publish(message_motors);
@@ -656,7 +656,7 @@ private:
     }
 
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_motors;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_imu;
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_feedback;
     //rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
     size_t count_;
     rclcpp_action::Server<NavigateRover>::SharedPtr navigate_rover_server_;
