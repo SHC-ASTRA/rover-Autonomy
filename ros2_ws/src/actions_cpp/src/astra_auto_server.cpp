@@ -27,6 +27,11 @@
 #include "rclcpp_action/rclcpp_action.hpp"  // ROS2 actions info
 #include "rclcpp/subscription_options.hpp"  // ROS2 subsriber info
 #include "std_msgs/msg/string.hpp"          // Message type for ROS2
+#include "image_transport/image_transport.hpp" // Image Transport for ROS
+
+
+// Open CV ROS Bridge
+#include "cv_bridge/cv_bridge.h"
 
 //openCV shenanigans
 #include <opencv2/opencv.hpp>                   //
@@ -127,6 +132,10 @@ public:
                 std::bind(&NavigateRoverServerNode::handle_accepted_callback, this, _1)
             );
         RCLCPP_INFO(this->get_logger(), "Action server has been started");
+
+        //Creating Image Publisher Node and Publisher
+        image_transport::ImageTransport image_transport_node(this);
+        image_transport::Publisher image_publisher = image_transport_node.advertise('camera/compressed');
         
         //Creating Publisher that communicates to the motors
         publisher_motors = this->create_publisher<std_msgs::msg::String>(
@@ -533,9 +542,10 @@ private:
                 outputVideo.write(imageCopy);
 
 
-
-
+                sensor_msgs::CompressedImage::SharedPtr compressed_msg = cv_bridge::CvImage(hdr, "bgr8", imageCopy).toCompressedImageMsg()
+                image_publisher.publish(compressed_msg);
                 cv::imshow("out", imageCopy);
+                
                 //inputVideo >> imageCopy;
                 //cv::Mat xframe;
                 //resize(imageCopy, xframe, sizeFrame);
