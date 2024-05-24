@@ -34,7 +34,7 @@ add_executable(depth_handler src/depth_handler.cpp)
 ament_target_dependencies(depth_handler std_msgs astra_auto_interfaces rclcpp rclcpp_action)
 
 add_executable(aruco_detect src/aruco.cpp)
-ament_target_dependencies(aruco_detect std_msgs rclcpp astra_auto_interfaces )
+ament_target_dependencies(aruco_detect std_msgs rclcpp rclcpp_action astra_auto_interfaces )
 target_link_libraries(aruco_detect ${OpenCV_LIBS} opencv_highgui)
 
 

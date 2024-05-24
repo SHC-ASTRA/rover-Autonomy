@@ -1,8 +1,8 @@
 //***********************************************
 //rover-Autonomy server client
 //Sends instructions to the server
-//Last edited Feb 16, 2024
-//Version: 1.2
+//Last edited May 23, 2024
+//Version: 1.3
 //***********************************************
 //Maintained by: Daegan Brown
 //Number: 423-475-4384
@@ -42,12 +42,23 @@ public:
 
         // Add callbacks
         auto options = rclcpp_action::Client<NavigateRover>::SendGoalOptions();
+        options.feedback_callback =
+            std::bind(&NavigateRoverClientNode::feedback_callback, this, _1, _2);
         options.result_callback = 
             std::bind(&NavigateRoverClientNode::goal_result_callback, this, _1);
 
         // Send the goal
         RCLCPP_INFO(this->get_logger(), "Sending a goal");
         navigate_rover_client_->async_send_goal(goal, options);
+    }
+
+    void feedback_callback(
+    NavigateRoverGoalHandle::SharedPtr,
+    const std::shared_ptr<const NavigateRover::Feedback> feedback)
+    {
+        std::stringstream ss;
+    ss << "Next number in sequence received: ";
+    RCLCPP_INFO(this->get_logger(), "%li", feedback->current_status);
     }
 private:
 

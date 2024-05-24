@@ -1,183 +1,95 @@
-#include <chrono>
-#include <functional>
-#include <memory>
-#include <string>
+//***********************************************
+//rover-Autonomy server client
+//Sends instructions to the server
+//Last edited May 23, 2024
+//Version: 1.3
+//***********************************************
+//Maintained by: Daegan Brown
+//Number: 423-475-4384
+//Email: daeganbrown03@gmail.com
+//***********************************************
+#include <iostream>
 
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+#include "astra_auto_interfaces/action/navigate_rover.hpp"
 
-#include <opencv2/opencv.hpp>
-#include <opencv2/core.hpp>
-#include <opencv2/aruco.hpp>
-#include <opencv2/videoio.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/objdetect/aruco_detector.hpp>
-#include <opencv2/calib3d.hpp>
-//#include <opencv2/aruco_samples_utlity.hpp>
-//#include <opencv2/objdetect/aruco_dictionary.hpp>
-using namespace std::chrono_literals;
+using NavigateRover = astra_auto_interfaces::action::NavigateRover;
+using NavigateRoverGoalHandle = rclcpp_action::ClientGoalHandle<NavigateRover>;
+using namespace std::placeholders;
 
-
-
-/* This example creates a subclass of Node and uses std::bind() to register a
-* member function as a callback from the timer. */
-
-class ArucoDetector : public rclcpp::Node
+class NavigateRoverClientNode : public rclcpp::Node 
 {
-  public:
-    ArucoDetector()
-    : Node("aruco_detect"), count_(0)
+public:
+    NavigateRoverClientNode() : Node("navigate_rover_client") 
     {
-        std::cout << "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFUUUUUUUUUUUUUUUUUUUU-" << std::endl;
-            int cameraNum;
-            std::cin >> cameraNum;
-            cv::VideoCapture inputVideo(cameraNum);
-            
-            
-            //inputVideo.open(cameraNum);
-            cv::aruco::DetectorParameters detectorParams = cv::aruco::DetectorParameters();
-            cv::aruco::Dictionary dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
-            cv::aruco::ArucoDetector detector(dictionary, detectorParams);
-            //cv::Size S = cv::Size((int) inputVideo.get(cv::CAP_PROP_FRAME_WIDTH),    // Acquire input size
-              //  (int) inputVideo.get(cv::CAP_PROP_FRAME_HEIGHT));
-            //cv::VideoWriter writer;
-            //int codec = cv::VideoWriter::fourcc('a', 'v', 'c', '1');
-            //double fps = 15.0;
-            //std::string filename = "footage.mp4";
-            //cv::Size sizeFrame(640,480);
-            //writer.open(filename, codec, fps, sizeFrame, true);
-            //cv::Mat cameraMatrix, distCoeffs;
-            //float markerLength = 0.05;
-            //readCameraParameters(cameraParamsFilename, cameraMatrix, distCoeffs);
-            //cv::Mat objPoints(4, 1, CV_32FC3);
-            //objPoints.ptr<cv::Vec3f>(0)[0] = cv::Vec3f(-markerLength/2.f, markerLength/2.f, 0);
-            //objPoints.ptr<cv::Vec3f>(0)[1] = cv::Vec3f(markerLength/2.f, markerLength/2.f, 0);
-            //objPoints.ptr<cv::Vec3f>(0)[2] = cv::Vec3f(markerLength/2.f, -markerLength/2.f, 0);
-            //objPoints.ptr<cv::Vec3f>(0)[3] = cv::Vec3f(-markerLength/2.f, -markerLength/2.f, 0);
-            cv::Mat image, imageCopy;
-            std::vector<int> ids;
-            std::vector<std::vector<cv::Point2f>> corners, rejected;
-            inputVideo >> image;
-            std::cout << "Video Prepared" << std::endl;
-
-            cv::Mat res;
-            std::vector<cv::Mat> spl;
-            cv::VideoWriter outputVideo;    
-            int codec = cv::VideoWriter::fourcc('H', '2', '6', '4');  // select desired codec (must be available at runtime)
-            double fps = 25.0;                          // framerate of the created video stream
-            std::string filename = "./live.mp4";             // name of the output video file
-            outputVideo.open(filename, codec, fps, image.size(), true);
-            // check if we succeeded
-            if (!outputVideo.isOpened()) {
-                std::cerr << "Could not open the output video file for write\n";
-                
-                }
-
-
-
-                std::cout << "Output prepared" << std::endl;
-            int iterateIT = 0;
-            while (inputVideo.grab()) 
-                {
-                iterateIT ++;
-                cv::Mat image, imageCopy;
-                inputVideo.retrieve(image);
-                image.copyTo(imageCopy);
-                //std::vector<int> ids;
-                //std::vector<std::vector<cv::Point2f>> corners, rejected;
-                detector.detectMarkers(image, corners, ids, rejected);
-                // if at least one marker detected
-                if (ids.size() > 0)
-                    cv::aruco::drawDetectedMarkers(imageCopy, corners, ids);
-                //int nMarkers = corner.size();
-                //std::vector<cv::Vec3d> rvecs(nMarkers), tvecs(nMarkers);
-                //Calculate pose for each marker
-                //for (int i = 0; i < nMarkers; i++)
-                //{
-                //   solvePnP(objPoints, corner.at(i), cameraMatrix, distCoeffs, rvecs.at(i), tvecs.at(i));
-                //}
-                //Draw Axis for each marker
-                //for (unsigned int i = 0; i < ids.size(); i++)
-                //{
-                //    cv::drawFrameAxes(imageCopy, cameraMatrix, distCoeffs, rvecs[i], tvecs[i], 0.1)
-                //}
-                outputVideo.write(imageCopy);
-
-
-
-                //cv::imshow("out", imageCopy);
-                cv::imshow("out", imageCopy);
-                //inputVideo >> imageCopy;
-                //cv::Mat xframe;
-                //resize(imageCopy, xframe, sizeFrame);
-                //writer.write(xframe);
-
-
-    
-                      //split(src, spl);                // process - extract only the correct channel
-                //for (int i =0; i < 3; ++i)
-                //{
-                    
-                //spl[i] = cv::Mat::zeros(S, spl[0].type());
-                //    
-                //}
-                //merge(spl, res);
-               // outputVideo.write(imageCopy);
-                //outputVideo.write(res); //save or
-                //outputVideo << res;
-                //int waitTime = 1;
-                char key = (char) cv::waitKey(1);
-                if (key == 27)
-                //std::cout << iterateIT << std::endl;
-                //if (iterateIT >= 90)
-                {
-                    break;
-                }
-                
-                
-                }
-               
-            //bool isSuccess = imwrite("./MyImage.jpg", imageCopy); //write the image to a file as JPEG 
-            //bool isSuccess = imwrite("D:/MyImage.png", image); //write the image to a file as PNG
-            //if (isSuccess == false)
-            //{
-            //std::cout << "Failed to save the image" << std::endl;
-            //std::cin.get(); //wait for a key press
-            //}
-            std::cout << "Finished filming!" << std::endl;
-            inputVideo.release();
-            //writer.release();
-        //Send final message
-        auto message = std_msgs::msg::String();
-        message.data = "Detecting";
-        RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
-        publisher_->publish(message);
-
-      /*
-      timer_ = this->create_wall_timer(
-      500ms, std::bind(&ArucoDetector::timer_callback, this));
-      */
+        navigate_rover_client_ = 
+            rclcpp_action::create_client<NavigateRover>(this, "navigate_rover");
     }
 
-  private:
-    /*void timer_callback()
+    void send_goal(int navigate_type, double gps_lat_target, 
+        double gps_long_target, double period)
     {
-      auto message = std_msgs::msg::String();
-      message.data = "Hello, world! " + std::to_string(count_++);
-      RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
-      publisher_->publish(message);
-    }*/
+        //Wait for the Action Server
+        navigate_rover_client_->wait_for_action_server();
 
+        // Create a goal
+        auto goal = NavigateRover::Goal();
+        goal.navigate_type = navigate_type;
+        goal.gps_lat_target = gps_lat_target;
+        goal.gps_long_target = gps_long_target;
+        goal.period = period;
 
-    //rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-    size_t count_;
+        // Add callbacks
+        auto options = rclcpp_action::Client<NavigateRover>::SendGoalOptions();
+        options.result_callback = 
+            std::bind(&NavigateRoverClientNode::goal_result_callback, this, _1);
+
+        // Send the goal
+        RCLCPP_INFO(this->get_logger(), "Sending a goal");
+        navigate_rover_client_->async_send_goal(goal, options);
+    }
+private:
+
+    // Callback to receive the results once the goal is done
+    void goal_result_callback(const NavigateRoverGoalHandle::WrappedResult &result)
+    {
+        int final_result = result.result->final_result;
+        RCLCPP_INFO(this->get_logger(), "Result: %d", final_result);
+    }
+
+    rclcpp_action::Client<NavigateRover>::SharedPtr navigate_rover_client_;
 };
 
-int main(int argc, char * argv[])
+int main(int argc, char **argv)
 {
-  rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<ArucoDetector>());
-  rclcpp::shutdown();
-  return 0;
+    int navigate_type;
+    double gps_lat_target;
+    double gps_long_target;
+
+    //Which type of navigation. See astra_auto_server.cpp for a list of
+    //options. 
+    std::cout << "Input Type:" << std::endl;
+    std::cin >> navigate_type; 
+    std::cout << std::endl; 
+
+    //The target latitude co-ordinate.
+    //8 decimal places
+    std::cout << "Target Latitude:" << std::endl;
+    std::cin >> gps_lat_target; 
+    std::cout << std::endl; 
+
+    //The target longitude co-ordinate.
+    //8 decimal places
+    std::cout << "Target Longitude:" << std::endl;
+    std::cin >> gps_long_target; 
+    std::cout << std::endl; 
+
+
+    rclcpp::init(argc, argv);
+    auto node = std::make_shared<NavigateRoverClientNode>(); 
+    node->send_goal(navigate_type, gps_lat_target, gps_long_target, 0.8);
+    rclcpp::spin(node);
+    rclcpp::shutdown();
+    return 0;
 }

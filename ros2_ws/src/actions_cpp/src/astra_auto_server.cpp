@@ -73,9 +73,7 @@ public:
       navigate_rover_subscriber_ = this->create_subscription<std_msgs::msg::String>(
       "astra/core/feedback", 10, std::bind(&NavigateRoverSubscriberNode::topic_callback, this, _1));
 
-      navigate_rover_subscriber_ = this->create_subscription<std_msgs::msg::String>(
-      "astra/auto/depth", 10, std::bind(&NavigateRoverSubscriberNode::topic_callback, this, _1));
-    
+      
     }
 
 private:
@@ -155,8 +153,15 @@ private:
     rclcpp_action::CancelResponse cancel_callback(
         const std::shared_ptr<NavigateRoverGoalHandle> goal_handle)
     {
-        //to get rid of startup warnings
+
         (void)goal_handle;
+        std::string rover_command;
+        auto message_motors = std_msgs::msg::String();
+
+        rover_command = "ctrl,0,0";  
+        message_motors.data = rover_command;
+        RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message_motors.data.c_str());
+        publisher_motors->publish(message_motors);
 
         return rclcpp_action::CancelResponse::ACCEPT;
     }
@@ -164,6 +169,7 @@ private:
     void handle_accepted_callback(
         const std::shared_ptr<NavigateRoverGoalHandle> goal_handle)
     {
+        
         RCLCPP_INFO(this->get_logger(), "Executing the goal");
         execute_goal(goal_handle);
     }
@@ -574,7 +580,28 @@ private:
             inputVideo.release();
             //writer.release();
         }   
+        else if (navigate_type == 8)
+        {
+             // Get the message describing the goal
+            auto feedback_msg = std::make_shared<NavigateRover::Feedback>();
+            // 
+            auto &status_message = feedback_msg->current_status;
 
+            status_message = 99;
+
+
+            // Send some data back to the goal
+            for (int i = 0; i < 2; i++) goal_handle->publish_feedback(feedback_msg);
+
+            usleep(5000);
+            if (rclcpp::ok()) {
+            // Publish the result
+            auto result = std::make_shared<NavigateRover::Result>();
+            result->final_result = 10;
+
+            
+        }
+        }
 
         // Pause before stopping 
 

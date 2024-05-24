@@ -8,3 +8,4 @@ float64 period
 int64 final_result
 ---
 # Feeedback
+int64 current_status
