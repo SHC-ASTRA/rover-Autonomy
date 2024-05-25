@@ -710,7 +710,7 @@ private:
 
                     usleep(0.25 * microsecond);
 
-                    message_motors.data = "ctrl,-0.2,-0.2";
+                    message_motors.data = "ctrl,0.0,0.0";
                     publisher_motors->publish(message_motors);
                 }
                 else if ((x_coord > 0) && (x_coord >= 340))
@@ -722,6 +722,15 @@ private:
                     publisher_motors->publish(message_motors);
 
                     //wait a little bit
+                    usleep(0.25 * microsecond);
+
+                    message_motors.data = "ctrl,0.0,0.0";
+                    publisher_motors->publish(message_motors);
+
+                    //Go forward
+                    message_motors.data = "ctrl,-0.2,-0.2";
+                    publisher_motors->publish(message_motors);
+
                     usleep(0.25 * microsecond);
 
                     message_motors.data = "ctrl,0.0,0.0";
