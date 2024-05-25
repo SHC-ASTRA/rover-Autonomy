@@ -222,6 +222,18 @@ private:
         message_motors.data = "led_set,300,0,0";
         publisher_motors->publish(message_motors);
 
+        //Turn LEDs  
+        message_motors.data = "led_set,0,250,0";
+        publisher_motors->publish(message_motors);
+
+        //Turn LEDs blue 
+        message_motors.data = "led_set,0,0,250";
+        publisher_motors->publish(message_motors);
+
+        //Turn LEDs blue 
+        message_motors.data = "led_set,300,0,0";
+        publisher_motors->publish(message_motors);
+
         //Request GPS data from Core, then wait 3 seconds.
         message_motors.data = "data,sendGPS";
         publisher_motors->publish(message_motors);
@@ -611,7 +623,7 @@ private:
             int x2_coord = 0;
 
             std::cout << "Homing in on Aruco" << std::endl;
-            int cameraNum = 0;
+            int cameraNum = 10;
             //std::cin >> cameraNum;
             cv::VideoCapture inputVideo(cameraNum);
             cv::Mat camMatrix, distCoeffs;
@@ -730,7 +742,7 @@ private:
                 
             }
                
-            message_motors.data = "led_set,0,0,250";
+            message_motors.data = "led_set,0,250,0";
             publisher_motors->publish(message_motors);
             std::cout << "Target Found!" << std::endl;
             inputVideo.release();
