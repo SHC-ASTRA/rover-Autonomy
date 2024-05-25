@@ -9,6 +9,7 @@
 //Email: daeganbrown03@gmail.com
 //***********************************************
 #include <iostream>
+#include <vector>
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
@@ -97,7 +98,8 @@ int main(int argc, char **argv)
     int navigate_type;      //Always will be 0, assigned later for clarity
     double gps_lat_target;  //Actually the y-coordinates of the detected square
     double gps_long_target; //x-coordinates of the detected square
-
+    int x_coord = 0;
+    int x2_coord = 0;
 
     //*********************************************************************************************
     //OpenCV Aruco Shenanigans
@@ -141,25 +143,45 @@ int main(int argc, char **argv)
             while (inputVideo.grab()) 
                 {
                 iterateIT ++;
+                int x_coord = 0;
                 cv::Mat image, imageCopy;
                 inputVideo.retrieve(image);
-                image.copyTo(imageCopy);
+                
+                cv::resize(image, imageCopy, cv::Size(640, 480), 0, 0, cv::INTER_AREA);
+                //cv::namedWindow("out", CV_WINDOW_AUTOSIZE);
                 //std::vector<int> ids;
                 //std::vector<std::vector<cv::Point2f>> corners, rejected;
                 detector.detectMarkers(image, corners, ids, rejected);
                 // if at least one marker detected
                 if (ids.size() > 0)
+                {
                     cv::aruco::drawDetectedMarkers(imageCopy, corners, ids);
+                    std::cout << "Aruco Detected" << std::endl;
+                    x_coord = (int)corners[0][0].x;
+                    x2_coord = (int)corners[0][1].x;
+                    std::cout << '(' << x_coord << ',' << x2_coord << ')' << std::endl;
+                    
+                    /*
+                    for (int i = 0; i < corners.size(); i++)
+                    {
+                        for (int j = 0; j < corners[i].size(); j++)
+                        {
+                            x_coord = (int)corners[i][j].x;
+                            std::cout << x_coord << ' ';
+                        }
+                    }*/
+
+                 }
                 
                 outputVideo.write(imageCopy);
 
 
 
                 
-                cv::imshow("out", imageCopy);
+                // cv::imshow("out", imageCopy);
                 
                 char key = (char) cv::waitKey(1);
-                if (key == 27)
+                if (x_coord != 0)
                 
                 {
                     break;
@@ -178,27 +200,23 @@ int main(int argc, char **argv)
     //Outputs
     //*********************************************************************************************
     //Cancels current goal
+    //HOW
+
 
     //Sends new goal request
-    navigate_type = 0; 
+    navigate_type = 10; 
     
 
-    //The target latitude co-ordinate.
-    //8 decimal places
-    std::cout << "Target Latitude:" << std::endl;
-    std::cin >> gps_lat_target; 
-    std::cout << std::endl; 
+    
+    
+    
 
-    //The target longitude co-ordinate.
-    //8 decimal places
-    std::cout << "Target Longitude:" << std::endl;
-    std::cin >> gps_long_target; 
-    std::cout << std::endl; 
+
 
 
     rclcpp::init(argc, argv);
     auto node = std::make_shared<NavigateRoverClientNode>(); 
-    node->send_goal(navigate_type, gps_lat_target, gps_long_target, 0.8);
+    node->send_goal(navigate_type, x_coord, x2_coord, 0.8);
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;

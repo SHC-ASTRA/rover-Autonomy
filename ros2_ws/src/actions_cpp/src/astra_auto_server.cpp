@@ -97,7 +97,7 @@ private:
         {
             RCLCPP_INFO(this->get_logger(), "Recieved IMU bearing");
             //Turns command into the proper bearing
-            //imu_bearing = imu_command(command); 
+            imu_bearing = command; 
         }
         else if (token == "gps")
         {
@@ -203,6 +203,8 @@ private:
         // 6: Search pattern
         // 7: AruCo Test
         // 8: Object Detection
+
+        // 10: ARUCO detected Message
         auto message_motors = std_msgs::msg::String();
         auto message_feedback = std_msgs::msg::String();
         double current_lat;
@@ -600,8 +602,139 @@ private:
             result->final_result = 10;
 
             
+            }
         }
+
+        else if (navigate_type == 10)
+        {
+            int x_coord = 0;
+            int x2_coord = 0;
+
+            std::cout << "Homing in on Aruco" << std::endl;
+            int cameraNum = 0;
+            //std::cin >> cameraNum;
+            cv::VideoCapture inputVideo(cameraNum);
+            cv::Mat camMatrix, distCoeffs;
+            
+            
+            //inputVideo.open(cameraNum);
+            cv::aruco::DetectorParameters detectorParams = cv::aruco::DetectorParameters();
+            cv::aruco::Dictionary dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
+            cv::aruco::ArucoDetector detector(dictionary, detectorParams);
+            
+            cv::Mat image, imageCopy;
+            std::vector<int> ids;
+            std::vector<std::vector<cv::Point2f>> corners, rejected;
+            inputVideo >> image;
+            std::cout << "Video Prepared" << std::endl;
+
+            cv::Mat res;
+            std::vector<cv::Mat> spl;
+            cv::VideoWriter outputVideo;    
+            int codec = cv::VideoWriter::fourcc('H', '2', '6', '4');  // select desired codec (must be available at runtime)
+            double fps = 25.0;                          // framerate of the created video stream
+            std::string filename = "./live.mp4";             // name of the output video file
+            outputVideo.open(filename, codec, fps, image.size(), true);
+            // check if we succeeded
+            if (!outputVideo.isOpened()) {
+                std::cerr << "Could not open the output video file for write\n";
+                
+                }
+
+
+
+                std::cout << "Output prepared" << std::endl;
+            int iterateIT = 0;
+            while (inputVideo.grab()) 
+            {
+                usleep(1 * microsecond);
+                iterateIT ++;
+                int x_coord = 0;
+                cv::Mat image, imageCopy;
+                inputVideo.retrieve(image);
+                
+                cv::resize(image, imageCopy, cv::Size(640, 480), 0, 0, cv::INTER_AREA);
+                detector.detectMarkers(image, corners, ids, rejected);
+                // if at least one marker detected
+                if (ids.size() > 0)
+                {
+                    cv::aruco::drawDetectedMarkers(imageCopy, corners, ids);
+                    std::cout << "Aruco Detected" << std::endl;
+                    x_coord = (int)corners[0][0].x;
+                    x2_coord = (int)corners[0][1].x;
+                    
+                    
+                 }
+                std::cout << x_coord << ',' << x2_coord << std::endl;
+
+
+                outputVideo.write(imageCopy);
+
+
+                //Ask for imu bearing
+
+
+                if ((x2_coord - x_coord) > 100)
+                {
+                    break;
+                }
+                else if((x_coord > 0) && (x_coord <= 300))
+                {
+
+                    RCLCPP_INFO(this->get_logger(), "Turning Left");
+
+                    message_motors.data = "ctrl,0.2,-0.2";
+                    publisher_motors->publish(message_motors);
+
+                    //wait a little bit
+                    usleep(0.25 * microsecond);
+
+                    message_motors.data = "ctrl,0.0,0.0";
+                    publisher_motors->publish(message_motors);
+
+                    //Go forward
+                    message_motors.data = "ctrl,-0.2,-0.2";
+                    publisher_motors->publish(message_motors);
+
+                    usleep(0.25 * microsecond);
+
+                    message_motors.data = "ctrl,-0.2,-0.2";
+                    publisher_motors->publish(message_motors);
+                }
+                else if ((x_coord > 0) && (x_coord >= 340))
+                {
+
+                    RCLCPP_INFO(this->get_logger(), "Turning Right");
+
+                    message_motors.data = "ctrl,-0.2,0.2";
+                    publisher_motors->publish(message_motors);
+
+                    //wait a little bit
+                    usleep(0.25 * microsecond);
+
+                    message_motors.data = "ctrl,0.0,0.0";
+                    publisher_motors->publish(message_motors);
+                }
+
+
+                
+                // cv::imshow("out", imageCopy);
+                
+                char key = (char) cv::waitKey(1);
+                if (x_coord = 0)
+                
+                {
+                    break;
+                }
+                
+                
+            }
+               
+          
+            std::cout << "Target Found!" << std::endl;
+            inputVideo.release();
         }
+        
 
         // Pause before stopping 
 
