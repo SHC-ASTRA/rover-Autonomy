@@ -730,7 +730,8 @@ private:
                 
             }
                
-          
+            message_motors.data = "led_set,0,0,250";
+            publisher_motors->publish(message_motors);
             std::cout << "Target Found!" << std::endl;
             inputVideo.release();
         }
