@@ -15,7 +15,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(astra_auto_interfaces REQUIRED)
-find_package(realsense2_camera REQUIRED)
+# find_package(realsense2_camera REQUIRED)
 
 find_package( OpenCV REQUIRED )
 

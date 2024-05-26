@@ -1,8 +1,8 @@
-//***********************************************
+//*************************************************************************************************
 //rover-Autonomy Server
 //runs commands from the client
-//Last edited March 30, 2024
-//Version: 1.5
+//Last edited May 25, 2024
+//Version: 1.7
 //*************************************************************************************************
 //Maintained by: Daegan Brown
 //Number: 423-475-4384
@@ -218,6 +218,11 @@ private:
         int iterate = 0;
 
 
+        //FEEDBACK
+        message_feedback.data = "Autonomy starting up. Cycling lights.";
+        publisher_feedback->publish(message_feedback);
+
+
         //Turn LEDs blue 
         message_motors.data = "led_set,300,0,0";
         publisher_motors->publish(message_motors);
@@ -241,8 +246,27 @@ private:
 
         //Use first input to decide where to go. Switch statement could work
         //better, TBD
-        if (navigate_type == 1)
+
+        //*****************************************************************************************
+        // Core Goals
+        //*****************************************************************************************
+        if (navigate_type == 0)
         {
+            //FEEDBACK
+            message_feedback.data = "Selected STOP";
+            publisher_feedback->publish(message_feedback);
+
+            message_motors.data = "ctrl,0,0";
+            RCLCPP_INFO(this->get_logger(), "Stopping");
+            publisher_motors->publish(message_motors);
+        }
+
+        else if (navigate_type == 1)
+        {
+            //FEEDBACK
+            message_feedback.data = "Starting navigation to GNSS point";
+            publisher_feedback->publish(message_feedback);
+
             //Make Rover face North, announce chosen task,
             message_motors.data = "auto,turningTo,15000,0";
             publisher_motors->publish(message_motors);
@@ -275,7 +299,8 @@ private:
                 i_needHeading = find_facing(gps_lat_target, gps_long_target, current_lat, current_long);
                 
                 
-                std::cout << std::fixed << "Calculated Heading: " << i_needHeading << std::endl << std::endl << std::endl << std::endl;
+                std::cout << std::fixed << "Calculated Heading: " << i_needHeading << std::endl \
+                    << std::endl << std::endl << std::endl;
 
 
                 message_motors.data = "auto,turningTo,15000," + std::to_string(i_needHeading);
@@ -306,6 +331,9 @@ private:
                 {
                     
                     iterate++;
+                    //FEEDBACK
+                    message_feedback.data = "Arrived at point";
+                    publisher_feedback->publish(message_feedback);
                 }
                 
             }
@@ -316,10 +344,18 @@ private:
             std::cout << "Arrived at location!";           
             
         }
-        //This is a test loop. Same code as 1, the only difference is instead of drving until it reaches the point, 
-        //It faces it once, drives towards it once, then is done. 
+        //*****************************************************************************************
+        // Debug Goals
+        //*****************************************************************************************
+
+
+        //This is a test loop. Same code as 1, the only difference is instead of drving until it 
+        //reaches the point, it faces it once, drives towards it once, then is done. 
         else if (navigate_type == 4)
         {
+            //FEEDBACK
+            message_feedback.data = "Selected DEBUG 1: Non iterating GNSS Navigation";
+            publisher_feedback->publish(message_feedback);
             std::cout << "Selected GPS targeting, but once" << std::endl;
             while (iterate == 0)
             {
@@ -350,10 +386,12 @@ private:
                 current_long = imu_command_gps(gps_string,2);
 
 
-                i_needHeading = find_facing(gps_lat_target, gps_long_target, current_lat, current_long);
+                i_needHeading = find_facing(gps_lat_target, gps_long_target, \
+                    current_lat, current_long);
                 
                 
-                std::cout << std::fixed << "Calculated Heading: " << i_needHeading << std::endl << std::endl << std::endl << std::endl;
+                std::cout << std::fixed << "Calculated Heading: " << i_needHeading << std::endl \
+                    << std::endl << std::endl << std::endl;
 
 
                 message_motors.data = "auto,turningTo,15000," + std::to_string(i_needHeading);
@@ -372,12 +410,19 @@ private:
                 current_long = imu_command_gps(gps_string,2);
                     
                 iterate++;
-                
+                //FEEDBACK
+                message_feedback.data = "Finished DEBUG 1";
+                publisher_feedback->publish(message_feedback);
                 
             }
         }
         else if (navigate_type == 5)
         {
+            //FEEDBACK
+            message_feedback.data = "Selected DEBUG 2: Test motors and IMU";
+            publisher_feedback->publish(message_feedback);
+
+
             rover_command = "ctrl,-.50,-.50";
             message_motors.data = rover_command;
             RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message_motors.data.c_str());
@@ -395,11 +440,20 @@ private:
             message_motors.data = rover_command;
             publisher_motors->publish(message_motors);
             usleep(15.0 * microsecond);
+
+            //FEEDBACK
+            message_feedback.data = "Finished DEBUG 2: Facing South";
+            publisher_feedback->publish(message_feedback);
         }
         
         // Rectilinear search pattern, mostly for SAR filming
         else if (navigate_type == 6)
         {
+            //FEEDBACK
+            message_feedback.data = "Selected DEBUG 3: Test Search Pattern";
+            publisher_feedback->publish(message_feedback);
+
+
             std::cout << "Selected Square Search Pattern" << std::endl;
             message_motors.data = "led_set,303,0,0";
             publisher_motors->publish(message_motors);
@@ -449,15 +503,17 @@ private:
                 message_motors.data = "ctrl,0.0,0.0";
                 publisher_motors->publish(message_motors);
             }
+            //FEEDBACK
+            message_feedback.data = "Finished DEBUG 3: Area Searched";
+            publisher_feedback->publish(message_feedback);
         }
-        else if (navigate_type == 0)
-        {
-            message_motors.data = "ctrl,0,0";
-            RCLCPP_INFO(this->get_logger(), "Stopping");
-            publisher_motors->publish(message_motors);
-        }
+        
         else if (navigate_type == 7)
         {
+            //FEEDBACK
+            message_feedback.data = "Selected DEBUG 4: ARUCO Test";
+            publisher_feedback->publish(message_feedback);
+
             std::cout << "Looking For ARCUO" << std::endl;
             int cameraNum;
             std::cin >> cameraNum;
@@ -466,12 +522,13 @@ private:
             
             //inputVideo.open(cameraNum);
             cv::aruco::DetectorParameters detectorParams = cv::aruco::DetectorParameters();
-            cv::aruco::Dictionary dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
+            cv::aruco::Dictionary dictionary = \
+                cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
             cv::aruco::ArucoDetector detector(dictionary, detectorParams);
 
 
 
-            //cv::Size S = cv::Size((int) inputVideo.get(cv::CAP_PROP_FRAME_WIDTH),    // Acquire input size
+            //cv::Size S = cv::Size((int) inputVideo.get(cv::CAP_PROP_FRAME_WIDTH), // Acquire input size
               //  (int) inputVideo.get(cv::CAP_PROP_FRAME_HEIGHT));
 
             //cv::VideoWriter writer;
@@ -501,7 +558,8 @@ private:
             cv::Mat res;
             std::vector<cv::Mat> spl;
             cv::VideoWriter outputVideo;    
-            int codec = cv::VideoWriter::fourcc('H', '2', '6', '4');  // select desired codec (must be available at runtime)
+            // select desired codec (must be available at runtime)
+            int codec = cv::VideoWriter::fourcc('H', '2', '6', '4');  
             double fps = 25.0;                          // framerate of the created video stream
             std::string filename = "./live.mp4";             // name of the output video file
             outputVideo.open(filename, codec, fps, image.size(), true);
@@ -535,7 +593,7 @@ private:
                 //Calculate pose for each marker
                 //for (int i = 0; i < nMarkers; i++)
                 //{
-                //   solvePnP(objPoints, corner.at(i), cameraMatrix, distCoeffs, rvecs.at(i), tvecs.at(i));
+                //solvePnP(objPoints, corner.at(i), cameraMatrix, distCoeffs, rvecs.at(i), tvecs.at(i));
                 //}
 
                 //Draw Axis for each marker
@@ -582,13 +640,6 @@ private:
 
                 }
                
-            //bool isSuccess = imwrite("./MyImage.jpg", imageCopy); //write the image to a file as JPEG 
-            //bool isSuccess = imwrite("D:/MyImage.png", image); //write the image to a file as PNG
-            //if (isSuccess == false)
-            //{
-            //std::cout << "Failed to save the image" << std::endl;
-            //std::cin.get(); //wait for a key press
-            //}
 
             std::cout << "Finished filming!" << std::endl;
             inputVideo.release();
@@ -596,6 +647,10 @@ private:
         }   
         else if (navigate_type == 8)
         {
+            //FEEDBACK
+            message_feedback.data = "Selected DEBUG 5: ??????????";
+            publisher_feedback->publish(message_feedback);
+
              // Get the message describing the goal
             auto feedback_msg = std::make_shared<NavigateRover::Feedback>();
             // 
@@ -617,8 +672,17 @@ private:
             }
         }
 
+        //*****************************************************************************************
+        // Internal Goals
+        //*****************************************************************************************
+
+
         else if (navigate_type == 10)
         {
+            //FEEDBACK
+            message_feedback.data = "Aruco Tag detected! Homing in";
+            publisher_feedback->publish(message_feedback);
+
             int x_coord = 0;
             int x2_coord = 0;
 
@@ -631,7 +695,8 @@ private:
             
             //inputVideo.open(cameraNum);
             cv::aruco::DetectorParameters detectorParams = cv::aruco::DetectorParameters();
-            cv::aruco::Dictionary dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
+            cv::aruco::Dictionary dictionary = \
+                cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
             cv::aruco::ArucoDetector detector(dictionary, detectorParams);
             
             cv::Mat image, imageCopy;
@@ -643,7 +708,8 @@ private:
             cv::Mat res;
             std::vector<cv::Mat> spl;
             cv::VideoWriter outputVideo;    
-            int codec = cv::VideoWriter::fourcc('H', '2', '6', '4');  // select desired codec (must be available at runtime)
+            // select desired codec (must be available at runtime)
+            int codec = cv::VideoWriter::fourcc('H', '2', '6', '4');  
             double fps = 25.0;                          // framerate of the created video stream
             std::string filename = "./live.mp4";             // name of the output video file
             outputVideo.open(filename, codec, fps, image.size(), true);
@@ -750,6 +816,9 @@ private:
                 
                 
             }
+            //FEEDBACK
+            message_feedback.data = "ARUCO Found succesfully";
+            publisher_feedback->publish(message_feedback);
                
             message_motors.data = "led_set,0,250,0";
             publisher_motors->publish(message_motors);
@@ -760,10 +829,15 @@ private:
 
         // Pause before stopping 
 
+
         usleep(3 * microsecond);
         message_motors.data = "ctrl,0,0";
         RCLCPP_INFO(this->get_logger(), "Stopping");
         publisher_motors->publish(message_motors);
+
+        //FEEDBACK
+        message_feedback.data = "Goal Finished";
+        publisher_feedback->publish(message_feedback);
 
         
         
