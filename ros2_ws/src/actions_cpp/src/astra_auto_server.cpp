@@ -689,7 +689,7 @@ private:
             std::cout << "Homing in on Aruco" << std::endl;
             int cameraNum = 10;
             //std::cin >> cameraNum;
-            cv::VideoCapture inputVideo(cameraNum);
+            cv::VideoCapture inputVideo("/dev/video0");
             cv::Mat camMatrix, distCoeffs;
             
             

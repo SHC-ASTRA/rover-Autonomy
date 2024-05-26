@@ -108,7 +108,7 @@ int main(int argc, char **argv)
     std::cout << "Starting Aruco Detection" << std::endl;
             // int cameraNum = 0;
             //std::cin >> cameraNum;
-            cv::VideoCapture inputVideo("/dev/video10");
+            cv::VideoCapture inputVideo("/dev/video0");
             cv::Mat camMatrix, distCoeffs;
             
             
