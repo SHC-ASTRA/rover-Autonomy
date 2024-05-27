@@ -5,16 +5,19 @@ This project is designed for the 2024 URC competition, specifically for the auto
 
 # Table of Contents
 1. Title
-2. Table of Requirements
-3. Requirments
+2. Table of Contents
+3. Requirements
    - ROS2 Humble
    - Colcon
    - OpenCV
-4. Recommended Programs
-5. How to Use
-6. Common Problems
-7. Author 
-8. Maintainer
+   - RealSense
+4. Hardware Requirments
+5. Recommended Programs
+6. How to Use
+7. Common Problems/Troubleshooting
+8. Major To-Do Items
+9. Author 
+10. Maintainer
 
 # Requirements 
 Before downloading anything, it is a good idea to make sure your system is up to date and that all software you are using is as well. If you are on Ubuntu/Debian, the following commands will do so. 
@@ -107,7 +110,7 @@ Finally, after that has finished, install
 sudo make install
 ```
 
-## Depth Modules/SLAM
+## RealSense
 Using the D435i camera lets us use many libaries, but first requires installing dependencies. First is [Librealsense](https://github.com/IntelRealSense/realsense-ros libaries, which are installed easily enough.)
 
 ```
@@ -116,7 +119,8 @@ sudo apt install ros-humble-librealsense2*
 
 Then you have to make a ROS2 Wrapper for it. This requires downloading the package into ros2_ws/src. 
 
-
+# Hardware Requirements
+Needs a camera to run object detection or AruCo. If running realsense-ros, also requires a RealSense Camera(435i is what we used). Other than that, just a computer with software requirements.
 # Recommended Programs
 
 ## VSCode
@@ -157,19 +161,44 @@ Once the client has been started, it will ask you what input type you would like
    - (Target Latitude, Target Longitude)
 3. GO and search around point for objects
    - (Target Latitude, Target Longitude)
-4. Same as 1, but without looping, for test
+4. DEBUG 1
+   - Same as 1, but without looping, for test
    - (Target Latitude, Target Longitude)
-5. Drives forward a small amount
+5. DEBUG 2
+   - Drives forward a small amount
    - Does nothing
-6. Search Pattern
-   - Does nothing
-7. ARUCO Test
-   - Does nothing
-8. Object Detection
-   - Does nothing
+6. DEBUG 3
+   - Search Pattern
+7. DEBUG 4
+   - Aruco Testing
+8. DEBUG 5
+   - Object Detection Testing
+   - Does nothing currently
+9. DEBUG 6
+   - Does nothing, empty
+10. INTERNAL 1
+   - When Aruco is detected by aruco detection node, it sends this goal. 
+11. INTERNAL 2
+   - When object is detected by obj detect node, it sends this goal.
 
+# Common Problems/Troubleshooting
 
-# Common Problems
+## Open CV exception
+If you get the error "install libgtk2.0-dev and pkg-config" when using Aruco detection, do the following from the home directory, assuming you followed above instructions for downloading OpenCV. Otherwise, instead of going to build directory, go to wherever you installed OpenCV.
+
+'''
+sudo apt install libgtk2.0-dev pkg-config
+cd build
+mkdir Release
+cd Release
+cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=ON -D INSTALL_PYTHON_EXAMPLES=ON -D BUILD_EXAMPLES=ON -D WITH_QT=ON -D WITH_GTK=ON -D WITH_OPENGL=ON ..
+cd ..
+make
+sudo make install
+'''
+
+# Major To-Do
+
 
 
 # Author
