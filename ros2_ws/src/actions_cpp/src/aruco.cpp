@@ -96,8 +96,8 @@ int main(int argc, char **argv)
     //Variables
     //*********************************************************************************************
     int navigate_type;      //Always will be 0, assigned later for clarity
-    double gps_lat_target;  //Actually the y-coordinates of the detected square
-    double gps_long_target; //x-coordinates of the detected square
+    // double gps_lat_target;  //Actually the y-coordinates of the detected square
+    // double gps_long_target; //x-coordinates of the detected square
     int x_coord = 0;
     int x2_coord = 0;
 
@@ -140,10 +140,12 @@ int main(int argc, char **argv)
 
                 std::cout << "Output prepared" << std::endl;
             int iterateIT = 0;
+            // int x_coord = 0;
+            int debug_iterator = 0;
             while (inputVideo.grab()) 
                 {
                 iterateIT ++;
-                int x_coord = 0;
+                std::cout << "Attempt " << iterateIT << std::endl;
                 cv::Mat image, imageCopy;
                 inputVideo.retrieve(image);
                 
@@ -151,10 +153,19 @@ int main(int argc, char **argv)
                 //cv::namedWindow("out", CV_WINDOW_AUTOSIZE);
                 //std::vector<int> ids;
                 //std::vector<std::vector<cv::Point2f>> corners, rejected;
-                detector.detectMarkers(image, corners, ids, rejected);
+                detector.detectMarkers(imageCopy, corners, ids, rejected);
                 // if at least one marker detected
+                // int debug_iterator = 0;
                 if (ids.size() > 0)
                 {
+                    /*
+                    int Xdebug_aruco = (int)rejected[0][0].x;
+                    int Ydebug_aruco = (int)rejected[0][0].y;
+                    std::cout << '{' << Xdebug_aruco << ',' << Ydebug_aruco << '}' << std::endl;
+                    int Xids = (int)ids[0];
+                    std::cout << Xids << std::endl;
+                    */
+                    
                     cv::aruco::drawDetectedMarkers(imageCopy, corners, ids);
                     std::cout << "Aruco Detected" << std::endl;
                     x_coord = (int)corners[0][0].x;
@@ -171,6 +182,16 @@ int main(int argc, char **argv)
                         }
                     }*/
 
+                    
+                    
+                    debug_iterator++;
+                    
+                     
+                    
+                 }
+                 else 
+                 {
+                    debug_iterator = 0;
                  }
                 
                 outputVideo.write(imageCopy);
@@ -178,14 +199,12 @@ int main(int argc, char **argv)
 
 
                 
-                // cv::imshow("out", imageCopy);
+                //cv::imshow("out", imageCopy);
                 
-                char key = (char) cv::waitKey(1);
-                if (x_coord != 0)
-                
-                {
+                // char key = (char) cv::waitKey(1);
+                if (debug_iterator >= 2)
                     break;
-                }
+                
                 
                 
                 }
