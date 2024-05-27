@@ -73,7 +73,9 @@ public:
       navigate_rover_subscriber_ = this->create_subscription<std_msgs::msg::String>(
       "astra/core/feedback", 10, std::bind(&NavigateRoverSubscriberNode::topic_callback, this, _1));
 
-      
+      obj_detect_subscriber_ = this->create_subscription<std_msgs::msg::String>(
+      "astra/auto/obj", 10, std::bind(&NavigateRoverSubscriberNode::topic_callback, this, _1));
+
     }
 
 private:
@@ -109,6 +111,7 @@ private:
     }
 
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr navigate_rover_subscriber_;
+    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr obj_detect_subscriber_;
 
 };
 
@@ -205,6 +208,7 @@ private:
         // 8: Object Detection
 
         // 10: ARUCO detected Message
+        // 11: Object detected Message
         auto message_motors = std_msgs::msg::String();
         auto message_feedback = std_msgs::msg::String();
         double current_lat;
@@ -223,7 +227,7 @@ private:
         publisher_feedback->publish(message_feedback);
 
 
-        //Turn LEDs blue 
+        //Turn LEDs red 
         message_motors.data = "led_set,300,0,0";
         publisher_motors->publish(message_motors);
 
@@ -235,7 +239,7 @@ private:
         message_motors.data = "led_set,0,0,250";
         publisher_motors->publish(message_motors);
 
-        //Turn LEDs blue 
+        //Turn LEDs red 
         message_motors.data = "led_set,300,0,0";
         publisher_motors->publish(message_motors);
 
@@ -687,9 +691,9 @@ private:
             int x2_coord = 0;
 
             std::cout << "Homing in on Aruco" << std::endl;
-            int cameraNum = 10;
+            // int cameraNum = 10;
             //std::cin >> cameraNum;
-            cv::VideoCapture inputVideo("/dev/video0");
+            cv::VideoCapture inputVideo("/dev/video10");
             cv::Mat camMatrix, distCoeffs;
             
             
@@ -727,7 +731,7 @@ private:
             {
                 usleep(1 * microsecond);
                 iterateIT ++;
-                int x_coord = 0;
+                x_coord = 0;
                 cv::Mat image, imageCopy;
                 inputVideo.retrieve(image);
                 
@@ -802,18 +806,34 @@ private:
                     message_motors.data = "ctrl,0.0,0.0";
                     publisher_motors->publish(message_motors);
                 }
+                else 
+                {
+                    //Go forward
+                    message_motors.data = "ctrl,-0.2,-0.2";
+                    publisher_motors->publish(message_motors);
 
+                    usleep(0.25 * microsecond);
 
-                
+                    message_motors.data = "ctrl,0.0,0.0";
+                    publisher_motors->publish(message_motors);
+                }
+
+                int lastX = 0;
+                int checkSame;
+                if (lastX == x_coord)
+                    checkSame++;
+                else 
+                    checkSame = 0;
+
                 // cv::imshow("out", imageCopy);
                 
-                char key = (char) cv::waitKey(1);
-                if (x_coord = 0)
+                // char key = (char) cv::waitKey(1);
+                if (x_coord == 0 || checkSame == 3)
                 
                 {
                     break;
                 }
-                
+                lastX = x_coord;
                 
             }
             //FEEDBACK
@@ -824,6 +844,13 @@ private:
             publisher_motors->publish(message_motors);
             std::cout << "Target Found!" << std::endl;
             inputVideo.release();
+        }
+
+        else if (navigate_type == 11)
+        {
+            //FEEDBACK
+            message_feedback.data = "Object detected! Homing in";
+            publisher_feedback->publish(message_feedback);
         }
         
 
