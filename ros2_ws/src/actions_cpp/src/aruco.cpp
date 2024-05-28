@@ -100,6 +100,13 @@ int main(int argc, char **argv)
     // double gps_long_target; //x-coordinates of the detected square
     int x_coord = 0;
     int x2_coord = 0;
+    int x3_coord = 0;
+    int x4_coord = 0;
+
+    int y_coord = 0;
+    int y2_coord = 0;
+    int y3_coord = 0;
+    int y4_coord = 0;
 
     //*********************************************************************************************
     //OpenCV Aruco Shenanigans
@@ -108,7 +115,7 @@ int main(int argc, char **argv)
     std::cout << "Starting Aruco Detection" << std::endl;
             // int cameraNum = 0;
             //std::cin >> cameraNum;
-            cv::VideoCapture inputVideo("/dev/video0");
+            cv::VideoCapture inputVideo("/dev/video10");
             cv::Mat camMatrix, distCoeffs;
             
             
@@ -169,8 +176,22 @@ int main(int argc, char **argv)
                     cv::aruco::drawDetectedMarkers(imageCopy, corners, ids);
                     std::cout << "Aruco Detected" << std::endl;
                     x_coord = (int)corners[0][0].x;
+                    y_coord = (int)corners[0][0].y;
+
                     x2_coord = (int)corners[0][1].x;
-                    std::cout << '(' << x_coord << ',' << x2_coord << ')' << std::endl;
+                    y2_coord = (int)corners[0][1].y;
+
+                    x3_coord = (int)corners[0][2].x;
+                    y3_coord = (int)corners[0][2].y;
+
+                    x4_coord = (int)corners[0][3].x;
+                    y4_coord = (int)corners[0][3].y;
+
+
+                    std::cout << '(' << x_coord << ',' << y_coord << ')' << std::endl;
+                    std::cout << '(' << x2_coord << ',' << y2_coord << ')' << std::endl;
+                    std::cout << '(' << x3_coord << ',' << y3_coord << ')' << std::endl;
+                    std::cout << '(' << x4_coord << ',' << y4_coord << ')' << std::endl;
                     
                     /*
                     for (int i = 0; i < corners.size(); i++)
@@ -212,6 +233,49 @@ int main(int argc, char **argv)
           
             std::cout << "Finished filming!" << std::endl;
             inputVideo.release();
+            std::cout << "Calculating Range" << std::endl;
+
+
+            float pixelHeight = y4_coord - y_coord;
+            float actualHeight = .15;
+            float distance = 2.7432;
+            float pixelWidth = x2_coord - x_coord;
+            float actualWidth = .15;
+            float focalH = pixelHeight * (distance/actualHeight);   // 597.408 for laptop
+            float focalW = pixelWidth * (distance/actualWidth);     // 603.504 for laptop
+            float meanFocal = (focalW + focalH)/2;
+            std::cout << focalH << " is the focal length using height" << std::endl;
+            std::cout << focalW << " is the focal length using width" << std::endl;
+            std::cout << meanFocal << " is the mean focal length" << std::endl;
+
+            float setMeanFocal = (457.2 + 475.488)/2;
+            float distanceFromH = (457.2/pixelHeight) * actualHeight; 
+            float distanceFromW = (475.488/pixelWidth) * actualWidth;
+            float distanceFromMeanH = (setMeanFocal/pixelHeight) * actualHeight;
+            float distanceFromMeanW = (setMeanFocal/pixelWidth) * actualWidth;
+            float meanDistance = (distanceFromMeanH + distanceFromMeanW)/2;
+
+            std::cout << distanceFromH << " is the distance from last focal H" << std::endl;
+            std::cout << distanceFromW << " is the distance from last focal W" << std::endl; 
+            std::cout << distanceFromMeanH << " is the distance from last focal H using mean focal" << std::endl; 
+            std::cout << distanceFromMeanW << " is the distance from last focal W using mean focal" << std::endl; 
+            std::cout << meanDistance << " is the distance using mean focal and mean from H and W" << std::endl; 
+            //*************************************************************************************
+            // Test 1
+            // Set distance of 9 feet(2.7432 m)
+            // Focal length(H, W, Mean) = (457.2, 475.488, 466.344)
+            // 
+            // Test 2
+            // Set distance of 
+            // Focal length(H, W, Mean) = ()
+            //
+            // Test 3
+            // Set Focal length(H, W, Mean) of ()
+            // Distance (H, W, MH, MW, Mean) = ()
+            //
+            // Test 4
+            // Set Focal length(H, W, Mean) of ()
+            // Distance (H, W, MH, MW, Mean) = ()
 
 
 

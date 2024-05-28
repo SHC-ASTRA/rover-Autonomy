@@ -254,6 +254,8 @@ private:
         //*****************************************************************************************
         // Core Goals
         //*****************************************************************************************
+        
+        // Stop Goal
         if (navigate_type == 0)
         {
             //FEEDBACK
@@ -265,6 +267,7 @@ private:
             publisher_motors->publish(message_motors);
         }
 
+        // GNSS Goal
         else if (navigate_type == 1)
         {
             //FEEDBACK
@@ -348,11 +351,30 @@ private:
             std::cout << "Arrived at location!";           
             
         }
+
+        // Aruco Goal
+        else if (navigate_type == 2)
+        {
+            //FEEDBACK
+            message_feedback.data = "Beginning search for Aruco Tag";
+            publisher_feedback->publish(message_feedback);
+
+
+        }
+
+        // Object Detection Goal
+        else if (navigate_type == 3)
+        {
+
+        }
+
+
         //*****************************************************************************************
         // Debug Goals
         //*****************************************************************************************
 
 
+        // DEBUG 1
         //This is a test loop. Same code as 1, the only difference is instead of drving until it 
         //reaches the point, it faces it once, drives towards it once, then is done. 
         else if (navigate_type == 4)
@@ -420,6 +442,8 @@ private:
                 
             }
         }
+
+        // DEBUG 2
         else if (navigate_type == 5)
         {
             //FEEDBACK
@@ -450,7 +474,8 @@ private:
             publisher_feedback->publish(message_feedback);
         }
         
-        // Rectilinear search pattern, mostly for SAR filming
+        // DEBUG 3 
+        //Rectilinear search pattern, mostly for SAR filming
         else if (navigate_type == 6)
         {
             //FEEDBACK
@@ -512,6 +537,7 @@ private:
             publisher_feedback->publish(message_feedback);
         }
         
+        // DEBUG 4
         else if (navigate_type == 7)
         {
             //FEEDBACK
@@ -649,6 +675,8 @@ private:
             inputVideo.release();
             //writer.release();
         }   
+
+        // DEBUG 5
         else if (navigate_type == 8)
         {
             //FEEDBACK
@@ -680,7 +708,7 @@ private:
         // Internal Goals
         //*****************************************************************************************
 
-
+        // INTERNAL 1
         else if (navigate_type == 10)
         {
             //FEEDBACK
@@ -846,10 +874,14 @@ private:
             inputVideo.release();
         }
 
+        // INTERNAL 2
         else if (navigate_type == 11)
         {
             //FEEDBACK
             message_feedback.data = "Object detected! Homing in";
+            publisher_feedback->publish(message_feedback);
+
+            message_feedback.data = "me when I lie, we ain't finding it";
             publisher_feedback->publish(message_feedback);
         }
         
