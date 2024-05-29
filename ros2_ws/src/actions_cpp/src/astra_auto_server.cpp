@@ -403,20 +403,20 @@ private:
                 t_long = long_max_bounds;
             }
             else if (distanceToCorner == d2)
-                {
+            {
                 corner = 2;
                 t_lat = lat_max_bounds;
                 t_long = long_min_bounds;
             }
             else if (distanceToCorner == d3)
             {
-                corner = 1;
+                corner = 3;
                 t_lat = lat_min_bounds;
                 t_long = long_min_bounds;
             }
             else
             {
-                corner = 1;
+                corner = 4;
                 t_lat = lat_min_bounds;
                 t_long = long_max_bounds;
             }
@@ -483,10 +483,33 @@ private:
                     message_feedback.data = "Arrived at corner";
                     publisher_feedback->publish(message_feedback);
                 }
-                
+
+                message_motors.data = "auto,turningTo,15000,0";
+                publisher_motors->publish(message_motors);
             }
 
+            if (corner == 1)
+            {
+                message_motors.data = "auto,turningTo,15000,180";
+                publisher_motors->publish(message_motors);
 
+
+            }
+            else if (corner == 2)
+            {
+                message_motors.data = "auto,turningTo,15000,180";
+                publisher_motors->publish(message_motors);
+            }
+            else if (corner == 3)
+            {
+                message_motors.data = "auto,turningTo,15000,0";
+                publisher_motors->publish(message_motors);
+            }
+            else
+            {
+                message_motors.data = "auto,turningTo,15000,0";
+                publisher_motors->publish(message_motors);
+            }
 
             
 
@@ -994,61 +1017,62 @@ private:
                 if (found)
                 {
                     midpoint = (abs(x_coord - x2_coord));
-                    if (abs(320 - midpoint) <= 5)
-                    {
-                        //You chill
-                        //FEEDBACK
-                        message_feedback.data = "Perfect Heading";
-                        publisher_feedback->publish(message_feedback);
-                    }
-                    else if (abs(320-midpoint) <= 30)
-                    {
-                        if (midpoint < 320)
-                            i_needHeading = imu_bearing - 3;
-                        else
-                            i_needHeading = imu_bearing + 3;
+                    i_needHeading = imu_bearing + ((320 - midpoint) * -0.140625)
+                    // if (abs(320 - midpoint) <= 5)
+                    // {
+                    //     //You chill
+                    //     //FEEDBACK
+                    //     message_feedback.data = "Perfect Heading";
+                    //     publisher_feedback->publish(message_feedback);
+                    // }
+                    // else if (abs(320-midpoint) <= 30)
+                    // {
+                    //     if (midpoint < 320)
+                    //         i_needHeading = imu_bearing - 3;
+                    //     else
+                    //         i_needHeading = imu_bearing + 3;
 
-                        if (imu_bearing < 0)
-                            imu_bearing = imu_bearing + 360;
-                        else if (imu_bearing > 360)
-                            imu_bearing = imu_bearing - 360;
-                        //FEEDBACK
-                        message_feedback.data = "Good Heading";
-                        publisher_feedback->publish(message_feedback);
-                        message_motors.data = "auto,turningTo,15000," + std::to_string(i_needHeading);
-                        publisher_motors->publish(message_motors);
-                    }
-                    else if (abs(320-midpoitn) <= 100)
-                    {
-                        if (midpoint < 320)
-                            i_needHeading = imu_bearing - 5;
-                        else
-                            i_needHeading = imu_bearing + 5;
+                    //     if (imu_bearing < 0)
+                    //         imu_bearing = imu_bearing + 360;
+                    //     else if (imu_bearing > 360)
+                    //         imu_bearing = imu_bearing - 360;
+                    //     //FEEDBACK
+                    //     message_feedback.data = "Good Heading";
+                    //     publisher_feedback->publish(message_feedback);
+                    //     message_motors.data = "auto,turningTo,15000," + std::to_string(i_needHeading);
+                    //     publisher_motors->publish(message_motors);
+                    // }
+                    // else if (abs(320-midpoitn) <= 100)
+                    // {
+                    //     if (midpoint < 320)
+                    //         i_needHeading = imu_bearing - 5;
+                    //     else
+                    //         i_needHeading = imu_bearing + 5;
 
-                        if (imu_bearing < 0)
-                            imu_bearing = imu_bearing + 360;
-                        else if (imu_bearing > 360)
-                            imu_bearing = imu_bearing - 360;
+                    //     if (imu_bearing < 0)
+                    //         imu_bearing = imu_bearing + 360;
+                    //     else if (imu_bearing > 360)
+                    //         imu_bearing = imu_bearing - 360;
                         
-                        //FEEDBACK
-                        message_feedback.data = "Mediocre Heading";
-                        publisher_feedback->publish(message_feedback);
-                    }
-                    else if (abs(320-midpoint) <= 200)
-                    {
-                        if (midpoint < 320)
-                            i_needHeading = imu_bearing - 10;
-                        else
-                            i_needHeading = imu_bearing + 10;
+                    //     //FEEDBACK
+                    //     message_feedback.data = "Mediocre Heading";
+                    //     publisher_feedback->publish(message_feedback);
+                    // }
+                    // else if (abs(320-midpoint) <= 200)
+                    // {
+                    //     if (midpoint < 320)
+                    //         i_needHeading = imu_bearing - 10;
+                    //     else
+                    //         i_needHeading = imu_bearing + 10;
 
-                        if (imu_bearing < 0)
-                            imu_bearing = imu_bearing + 360;
-                        else if (imu_bearing > 360)
-                            imu_bearing = imu_bearing - 360;
-                        //FEEDBACK
-                        message_feedback.data = "Poor Heading";
-                        publisher_feedback->publish(message_feedback);
-                    }
+                    //     if (imu_bearing < 0)
+                    //         imu_bearing = imu_bearing + 360;
+                    //     else if (imu_bearing > 360)
+                    //         imu_bearing = imu_bearing - 360;
+                    //     //FEEDBACK
+                    //     message_feedback.data = "Poor Heading";
+                    //     publisher_feedback->publish(message_feedback);
+                    // }
 
 
                     message_motors.data = "data,getOrientation";
@@ -1266,7 +1290,7 @@ int main(int argc, char **argv)
     cv::Mat markerImage;
     cv::aruco::Dictionary dictionary1 = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
     cv::aruco::generateImageMarker(dictionary1, 1, 200, markerImage, 1);
-    cv::imwrite("marker1.png", markerImage);
+    cv::imwrite("marker2.png", markerImage);
 
     //Camera stuff for OpenCV
     
