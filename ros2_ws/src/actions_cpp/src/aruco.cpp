@@ -10,6 +10,7 @@
 //***********************************************
 #include <iostream>
 #include <vector>
+#include <chrono>
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
@@ -43,7 +44,7 @@ public:
     }
 
     void send_goal(int navigate_type, double gps_lat_target, 
-        double gps_long_target, double period)
+        double gps_long_target, double target_radius, double period)
     {
         //Wait for the Action Server
         navigate_rover_client_->wait_for_action_server();
@@ -53,6 +54,7 @@ public:
         goal.navigate_type = navigate_type;
         goal.gps_lat_target = gps_lat_target;
         goal.gps_long_target = gps_long_target;
+        goal.target_radius = target_radius;
         goal.period = period;
 
         // Add callbacks
@@ -61,7 +63,20 @@ public:
             std::bind(&NavigateRoverClientNode::feedback_callback, this, _1, _2);
         options.result_callback = 
             std::bind(&NavigateRoverClientNode::goal_result_callback, this, _1);
+        options.goal_response_callback =
+            std::bind(&NavigateRoverClientNode::goal_response_callback, this, _1);
 
+
+        //*****************************************************************************************
+
+        //*****************************************************************************************
+
+        // Cancel Previous Goal
+        //count_until_client_->async_cancel_goal(goal_handle_);
+        timer_ = this->create_wall_timer(
+            std::chrono::seconds(1),
+            std::bind(&NavigateRoverClientNode::timer_callback, this)
+            );  
         // Send the goal
         RCLCPP_INFO(this->get_logger(), "Sending a goal");
         navigate_rover_client_->async_send_goal(goal, options);
@@ -77,6 +92,24 @@ public:
     }
 private:
 
+    void timer_callback()
+    {
+       // navigate_rover_client_->async_cancel_goal(goal_handle_);
+        timer_->cancel();
+    }
+    void goal_response_callback(const NavigateRoverGoalHandle::SharedPtr &goal_handle)
+    {
+        this->goal_handle_ = goal_handle;
+        if (!goal_handle)
+        {
+            RCLCPP_INFO(this->get_logger(), "Goal got rejected");
+        }
+        else
+        {
+            //this->goal_handle_ = goal_handle;
+            RCLCPP_INFO(this->get_logger(), "Goal got accepted");
+        }
+    }
     // Callback to receive the results once the goal is done
     void goal_result_callback(const NavigateRoverGoalHandle::WrappedResult &result)
     {
@@ -85,6 +118,9 @@ private:
     }
 
     rclcpp_action::Client<NavigateRover>::SharedPtr navigate_rover_client_;
+    rclcpp::TimerBase::SharedPtr timer_;
+    NavigateRoverGoalHandle::SharedPtr goal_handle_;
+
 };
 //*************************************************************************************************
 //MAIN
@@ -115,7 +151,7 @@ int main(int argc, char **argv)
     std::cout << "Starting Aruco Detection" << std::endl;
             // int cameraNum = 0;
             //std::cin >> cameraNum;
-            cv::VideoCapture inputVideo("/dev/video10");
+            cv::VideoCapture inputVideo("/dev/video0");
             cv::Mat camMatrix, distCoeffs;
             
             
@@ -270,8 +306,9 @@ int main(int argc, char **argv)
             // Focal length(H, W, Mean) = ()
             //
             // Test 3
-            // Set Focal length(H, W, Mean) of ()
+            // Set Focal length(H, W, Mean) of (457.2, 475.488, 466.344)
             // Distance (H, W, MH, MW, Mean) = ()
+            // Measured Distance: 
             //
             // Test 4
             // Set Focal length(H, W, Mean) of ()
@@ -283,7 +320,9 @@ int main(int argc, char **argv)
     //Outputs
     //*********************************************************************************************
     //Cancels current goal
-    //HOW
+    
+    
+    
 
 
     //Sends new goal request
@@ -299,7 +338,7 @@ int main(int argc, char **argv)
 
     rclcpp::init(argc, argv);
     auto node = std::make_shared<NavigateRoverClientNode>(); 
-    node->send_goal(navigate_type, x_coord, x2_coord, 0.8);
+    node->send_goal(navigate_type, x_coord, x2_coord, 1.0, 0.8);
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;

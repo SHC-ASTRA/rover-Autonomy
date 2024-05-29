@@ -85,7 +85,7 @@ float find_distance(double gps_lat_target, double gps_long_target, \
 // Parse IMU Facing String
 //*************************************************************************************************
 //Parses imu string for IMU facing
-std::string orientation_string(std::string command)
+double orientation_string(std::string command)
 {
             
     std::string delimiter = ",";
@@ -93,6 +93,7 @@ std::string orientation_string(std::string command)
     std::string token;
     std::string token1;
     std::string scommand = command.c_str();
+    double orientation;
     pos = scommand.find(delimiter);
     token = scommand.substr(0, pos);
             
@@ -101,11 +102,12 @@ std::string orientation_string(std::string command)
     {
         scommand.erase(0, pos + delimiter.length());
         //float command_r = std::stof(scommand);
-        return scommand;
+        orientation = std::stod(scommand);
+        return orientation;
     }
     else //NEED FAILSTATE ASAP
     {
-        return scommand;
+        return 0;
     }
 
         }

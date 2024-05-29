@@ -42,6 +42,7 @@ target_link_libraries(aruco_detect ${OpenCV_LIBS} opencv_highgui)
 install(TARGETS 
   navigate_rover_server
   navigate_rover_client
+  
   depth_handler
   aruco_detect
   DESTINATION lib/${PROJECT_NAME}/

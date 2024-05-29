@@ -28,7 +28,7 @@ public:
     }
 
     void send_goal(int navigate_type, double gps_lat_target, 
-        double gps_long_target, double period)
+        double gps_long_target, double target_radius, double period)
     {
         //Wait for the Action Server
         navigate_rover_client_->wait_for_action_server();
@@ -38,6 +38,7 @@ public:
         goal.navigate_type = navigate_type;
         goal.gps_lat_target = gps_lat_target;
         goal.gps_long_target = gps_long_target;
+        goal.target_radius = target_radius;
         goal.period = period;
 
         // Add callbacks
@@ -50,6 +51,7 @@ public:
         // Send the goal
         RCLCPP_INFO(this->get_logger(), "Sending a goal");
         navigate_rover_client_->async_send_goal(goal, options);
+        return;
     }
 
     void feedback_callback(
@@ -65,8 +67,16 @@ private:
     // Callback to receive the results once the goal is done
     void goal_result_callback(const NavigateRoverGoalHandle::WrappedResult &result)
     {
-        int final_result = result.result->final_result;
-        RCLCPP_INFO(this->get_logger(), "Result: %d", final_result);
+        auto status = result.code;
+        if (status == rclcpp_action::ResultCode::SUCCEEDED)
+        {
+            RCLCPP_INFO(this->get_logger(), "Succeeded");
+        }
+        else if (status == rclcpp_action::ResultCode::CANCELED)
+        {
+            RCLCPP_WARN(this->get_logger(), "Canceled");
+        }
+        
     }
 
     rclcpp_action::Client<NavigateRover>::SharedPtr navigate_rover_client_;
@@ -77,6 +87,8 @@ int main(int argc, char **argv)
     int navigate_type;
     double gps_lat_target;
     double gps_long_target;
+    double target_radius;
+    double period = 0.8;
 
     //Which type of navigation. See astra_auto_server.cpp for a list of
     //options. 
@@ -96,10 +108,16 @@ int main(int argc, char **argv)
     std::cin >> gps_long_target; 
     std::cout << std::endl; 
 
+    //Target radius to search, for area searching;
+    std::cout << "Target Radius:" << std::endl;
+    std::cin >> target_radius;
+    std::cout << std::endl;
+
+
 
     rclcpp::init(argc, argv);
     auto node = std::make_shared<NavigateRoverClientNode>(); 
-    node->send_goal(navigate_type, gps_lat_target, gps_long_target, 0.8);
+    node->send_goal(navigate_type, gps_lat_target, gps_long_target, target_radius, 0.8);
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;
