@@ -11,6 +11,7 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <unistd.h>    
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
@@ -73,13 +74,21 @@ public:
 
         // Cancel Previous Goal
         //count_until_client_->async_cancel_goal(goal_handle_);
-        timer_ = this->create_wall_timer(
-            std::chrono::seconds(1),
-            std::bind(&NavigateRoverClientNode::timer_callback, this)
-            );  
+        // NavigateRoverClientNode->async_cancel_all_goals();
+        
+    
         // Send the goal
         RCLCPP_INFO(this->get_logger(), "Sending a goal");
         navigate_rover_client_->async_send_goal(goal, options);
+
+        //Cancel the gaol, testing
+        std::cout << "About to send Goal Handle" << std::endl;
+        
+        std::cout << "Sent Goal Handle" << std::endl;
+        // timer_ = this->create_wall_timer(
+        //     std::chrono::seconds(2),
+        //     std::bind(&NavigateRoverClientNode::timer_callback, this)
+        // );
     }
 
     void feedback_callback(
@@ -91,23 +100,25 @@ public:
     RCLCPP_INFO(this->get_logger(), "%li", feedback->current_status);
     }
 private:
-
+    
     void timer_callback()
     {
-       // navigate_rover_client_->async_cancel_goal(goal_handle_);
+        // navigate_rover_client_->async_cancel_goal(goal_handle_);
         timer_->cancel();
     }
+    //Accepted or rejected
     void goal_response_callback(const NavigateRoverGoalHandle::SharedPtr &goal_handle)
     {
-        this->goal_handle_ = goal_handle;
         if (!goal_handle)
         {
             RCLCPP_INFO(this->get_logger(), "Goal got rejected");
         }
         else
         {
-            //this->goal_handle_ = goal_handle;
+            this->goal_handle_ = goal_handle;
             RCLCPP_INFO(this->get_logger(), "Goal got accepted");
+            usleep(10000);
+            navigate_rover_client_->async_cancel_goal(goal_handle_);
         }
     }
     // Callback to receive the results once the goal is done
@@ -323,6 +334,7 @@ int main(int argc, char **argv)
     
     
     
+    
 
 
     //Sends new goal request
@@ -338,7 +350,7 @@ int main(int argc, char **argv)
 
     rclcpp::init(argc, argv);
     auto node = std::make_shared<NavigateRoverClientNode>(); 
-    node->send_goal(navigate_type, x_coord, x2_coord, 1.0, 0.8);
+    node->send_goal(navigate_type, x_coord, x2_coord, distanceFromW, 0.8);
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;

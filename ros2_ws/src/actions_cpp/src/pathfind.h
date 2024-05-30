@@ -100,7 +100,9 @@ double orientation_string(std::string command)
 
     if (token == "orientation")
     {
+        std::cout << "DEBUG: " << scommand << std::endl;
         scommand.erase(0, pos + delimiter.length());
+        std::cout << "DEBUG: " << scommand << std::endl;
         //float command_r = std::stof(scommand);
         orientation = std::stod(scommand);
         return orientation;
@@ -127,7 +129,9 @@ double imu_command_gps(std::string command, int choose)
     pos = scommand.find(delimiter);
     if (choose == 1)
     {
+        std::cout << "DEBUG 1: " << scommand << std::endl;
         scommand.erase(pos + delimiter.length(), (scommand.length()));
+        std::cout << "DEBUG 2: " << scommand << std::endl;
         command = scommand;   
         double latitude = std::stod(scommand);
         std::cout << latitude;
@@ -135,9 +139,11 @@ double imu_command_gps(std::string command, int choose)
     }
     else if (choose == 2)
     {
+        std::cout << "DEBUG 3: " << scommand << std::endl;
         scommand.erase(0,pos + delimiter.length());
+        std::cout << "DEBUG 4: " << scommand << std::endl;
         pos = scommand.find(delimiter); 
-        scommand.erase(pos  + delimiter.length(), (scommand.length() - 1));
+        //scommand.erase(pos  + delimiter.length(), (scommand.length() - 1));
         command = scommand;
         double longitude = std::stod(scommand); 
         std::cout << longitude; 

@@ -9,6 +9,7 @@
 //Email: daeganbrown03@gmail.com
 //***********************************************
 #include <iostream>
+#include <chrono>
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
@@ -64,6 +65,13 @@ public:
     }
 private:
 
+    void timer_callback()
+    {
+        //RCLCPP_INFO(this->get_logger(), "Canceled the goal");
+        timer_->cancel();
+    }
+
+
     // Callback to receive the results once the goal is done
     void goal_result_callback(const NavigateRoverGoalHandle::WrappedResult &result)
     {
@@ -77,9 +85,12 @@ private:
             RCLCPP_WARN(this->get_logger(), "Canceled");
         }
         
+        
     }
 
     rclcpp_action::Client<NavigateRover>::SharedPtr navigate_rover_client_;
+    rclcpp::TimerBase::SharedPtr timer_;
+    NavigateRoverGoalHandle::SharedPtr goal_handle;
 };
 
 int main(int argc, char **argv)
