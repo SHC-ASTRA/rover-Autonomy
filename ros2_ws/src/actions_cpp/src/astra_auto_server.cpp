@@ -260,6 +260,8 @@ private:
         message_motors.data = "data,sendGPS";
         publisher_motors->publish(message_motors);
         usleep(3 * microsecond);
+        current_lat = imu_command_gps(gps_string,1);
+        current_long = imu_command_gps(gps_string,2);
 
         //Use first input to decide where to go. Switch statement could work
         //better, TBD
