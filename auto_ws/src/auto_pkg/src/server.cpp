@@ -74,6 +74,13 @@ class AutoServerNode : public rclcpp::Node
         void handle_accepted_callback(
             const std::shared_ptr<AutoCommandGoalHandle> goal_handle)
             {
+                // Pull request data from .action into global variables
+                mission_type = goal_handle->get_goal()->mission_type;
+                gps_lat_target = goal_handle->get_goal()->gps_lat_target;
+                gps_long_target = goal_handle->get_goal()->gps_long_target;
+                target_radius = goal_handle->get_goal()->target_radius;
+                period = goal_handle->get_goal()->period;
+
                 RCLCPP_INFO(this->get_logger(), "Executing the goal");
                 execute_goal(goal_handle);
             }
@@ -82,13 +89,7 @@ class AutoServerNode : public rclcpp::Node
         void execute_goal(
             const std::shared_ptr<AutoCommandGoalHandle> goal_handle)
             {
-                // Pull request data from .action into global variables
-                mission_type = goal_handle->get_goal()->mission_type;
-                gps_lat_target = goal_handle->get_goal()->gps_lat_target;
-                gps_long_target = goal_handle->get_goal()->gps_long_target;
-                target_radius = goal_handle->get_goal()->target_radius;
-                period = goal_handle->get_goal()->period;
-
+                
                 // I dont remember why this is needed
                 rclcpp::Rate loop_rate(2.0/period);
 
