@@ -10,9 +10,10 @@
 //INCLUDES
 //*************************************************************************************************
 
-#include "rclcpp/rclcpp.hpp"                  //Needed for ros2 cpp 
-#include "rclcpp_action/rclcpp_action.hpp"    //Needed for actions, specifically
+#include "rclcpp/rclcpp.hpp"                    //Needed for ros2 cpp 
+#include "rclcpp_action/rclcpp_action.hpp"      //Needed for actions, specifically
 #include "clucky_interfaces/action/auto_command.hpp"     
+#include <string>                               //Gosh I love strings in c++
 
 
 using AutoCommand = clucky_interfaces::action::AutoCommand;
@@ -23,12 +24,20 @@ using namespace std::placeholders;
 // Global Variables
 //*************************************************************************************************
 
-int mission_type;
-double gps_lat_target, gps_long_target, target_radius, period;
+int mission_type;                                               //State
+double gps_lat_target, gps_long_target, target_radius, period;  //Inputs
+double gps_lat_current, gps_long_current;                       //Current Location
+std::string gps_string;                                         //Most recent GPS String
 
 //*************************************************************************************************
 // Server Nodes 
 //*************************************************************************************************
+
+// Subscriber Server node
+class AutoServerSubscriberNode : public rclcpp::Node
+{
+    
+};
 
 // Primary Server Node
 class AutoServerNode : public rclcpp::Node
@@ -57,11 +66,14 @@ class AutoServerNode : public rclcpp::Node
                 // Get rid of STDR outputs
                 (void)uuid;
                 (void)goal;
+                // set temp variable = gps targets, then make sure distance is < 1000 meters
 
+                
                 return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+                // return rclcpp_action::GoalResponse::REJECT;
             }
 
-        // Cancell Behavior
+        // Cancel Behavior
         rclcpp_action::CancelResponse cancel_callback(
             const std::shared_ptr<AutoCommandGoalHandle> goal_handle)
             {
@@ -72,7 +84,7 @@ class AutoServerNode : public rclcpp::Node
 
         // Seems redundant
         void handle_accepted_callback(
-            const std::shared_ptr<AutoCommandGoalHandle> goal_handle)
+            const std::shared_ptr<AutoCommandGoalHandle> goal_handle) 
             {
                 // Pull request data from .action into global variables
                 mission_type = goal_handle->get_goal()->mission_type;
