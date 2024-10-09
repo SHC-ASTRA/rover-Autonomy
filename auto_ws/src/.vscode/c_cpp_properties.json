@@ -5,7 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/opt/ros/humble/include/**",
-                "/home/ozy/rover-Autonomy/auto_ws/install/clucky_interfaces/include/**"
+                "~/rover-Autonomy/auto_ws/install/clucky_interfaces/include/**"
                 
             ],
             "defines": [],
