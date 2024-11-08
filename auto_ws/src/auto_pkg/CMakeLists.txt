@@ -11,15 +11,17 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(clucky_interfaces REQUIRED)
 
-add_executable(astra_auto_server src/server.cpp)
-ament_target_dependencies(astra_auto_server rclcpp rclcpp_action clucky_interfaces)
+add_executable(auto_server src/server.cpp)
+ament_target_dependencies(auto_server rclcpp rclcpp_action clucky_interfaces)
 
 add_executable(auto_client_startup src/starter_client.cpp)
 ament_target_dependencies(auto_client_startup rclcpp rclcpp_action clucky_interfaces)
 
 
+
+
 install(TARGETS  
-  astra_auto_server
+  auto_server
   auto_client_startup
   DESTINATION lib/${PROJECT_NAME}/
   )

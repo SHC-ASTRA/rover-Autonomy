@@ -6,10 +6,10 @@
         "limitSymbolsToIncludedHeaders": false
       },
       "includePath": [
-        "/home/ozy/rover-Autonomy/auto_ws/install/clucky_interfaces/include/**",
-        "/home/ozy/rover-Autonomy/auto_ws/install/astra_auto_interfaces/include/**",
+        "~/rover-Autonomy/auto_ws/install/clucky_interfaces/include/**",
+        "~/rover-Autonomy/auto_ws/install/astra_auto_interfaces/include/**",
         "/opt/ros/humble/include/**",
-        "/home/ozy/rover-Autonomy/auto_ws/src/auto_pkg/include/**",
+        "~/rover-Autonomy/auto_ws/src/auto_pkg/include/**",
         "/usr/include/**"
       ],
       "name": "ROS",

@@ -65,10 +65,16 @@ class AutoServerNode : public rclcpp::Node
             {
                 // Get rid of STDR outputs
                 (void)uuid;
-                (void)goal;
-                // set temp variable = gps targets, then make sure distance is < 1000 meters
-
                 
+                // Validate Goal
+
+                RCLCPP_INFO(this->get_logger(), "Recieved a goal");
+                if (goal->mission_type <= 0)
+                {
+                    RCLCPP_INFO(this->get_logger(), "Rejecting the goal");
+                    return rclcpp_action::GoalResponse::REJECT;
+                }
+                RCLCPP_INFO(this->get_logger(), "Accepted the goal");
                 return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
                 // return rclcpp_action::GoalResponse::REJECT;
             }
