@@ -7,7 +7,9 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(clucky_interfaces REQUIRED)
 
@@ -25,5 +27,14 @@ install(TARGETS
   auto_client_startup
   DESTINATION lib/${PROJECT_NAME}/
   )
+
+# Install Python modules
+ament_python_install_package(${PROJECT_NAME})
+
+# Install Python executables
+install(PROGRAMS
+  scripts/action_client.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 ament_package()
