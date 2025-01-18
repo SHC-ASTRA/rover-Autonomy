@@ -604,7 +604,6 @@ private:
                 //         x_coord = (int)corners[0][0].x;
                 //         y_coord = (int)corners[0][0].y;
 
-<<<<<<< HEAD
                 //         x2_coord = (int)corners[0][1].x;
                 //         y2_coord = (int)corners[0][1].y;
 
@@ -620,23 +619,6 @@ private:
                 //     }
                 //     break;
                 // } 
-=======
-                        x2_coord = (int)corners[0][1].x;
-                        y2_coord = (int)corners[0][1].y;
-
-                        x3_coord = (int)corners[0][2].x;
-                        y3_coord = (int)corners[0][2].y;
-                                                                                        
-                        x4_coord = (int)corners[0][3].x;
-                        y4_coord = (int)corners[0][3].y;
-                        feedback_replacement++;
-                        firstFrame = true;
-                        
-        
-                    }
-                    break;
-                }
->>>>>>> 2f67180001301319e15ee9bad6b475f5d2f6e37a
                 
                 //*********************************************************************************
                 //End OpenCV SHIT
