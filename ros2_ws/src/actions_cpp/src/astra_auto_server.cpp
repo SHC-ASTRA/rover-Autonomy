@@ -292,7 +292,6 @@ private:
             publisher_motors->publish(message_motors);
         }
 
-        //*****************************************************************************************
         // GNSS Goal
         else if (navigate_type == 1)
         {
@@ -327,10 +326,6 @@ private:
                 needDistance = find_distance(gps_lat_target, gps_long_target, current_lat, current_long);
                 i_needDistance = needDistance;
                 RCLCPP_INFO(this->get_logger(), "Remaining distance: '%d'", i_needDistance);
-                //feedback
-                message_feedback.data = "Remaining distance: '%d'", i_needDistance;
-                publisher_feedback->publish(message_feedback);
-
 
 
                 i_needHeading = find_facing(gps_lat_target, gps_long_target, current_lat, current_long);
@@ -375,34 +370,16 @@ private:
                 
             }
              
-            RCLCPP_INFO(this->get_logger(), "Arrived at location"); 
-            for (int g = 0; g < 10 ; g++ )
-            {    
-                message_motors.data = "led_set,0,0,300";
-                publisher_motors->publish(message_motors);
-                
-                usleep(0.5 * microsecond);
-                message_motors.data = "led_set,0,0,0";
-                publisher_motors->publish(message_motors);
-            }        
             message_motors.data = "led_set,0,0,300";
             publisher_motors->publish(message_motors);
+            RCLCPP_INFO(this->get_logger(), "Arrived at location"); 
+            std::cout << "Arrived at location!";           
             
         }
-        //*****************************************************************************************
+
         // Aruco Goal
         else if (navigate_type == 2)
         {
-            //Request GPS data from Core, then wait 3 seconds.
-            message_motors.data = "data,sendGPS";
-            publisher_motors->publish(message_motors);
-            usleep(3 * microsecond);
-
-            current_lat = imu_command_gps(gps_string,1);
-            current_long = imu_command_gps(gps_string,2);
-
-
-
             //FEEDBACK
             message_feedback.data = "Beginning search for Aruco Tag. Navigating to target area";
             publisher_feedback->publish(message_feedback);
@@ -486,19 +463,23 @@ private:
             //     t_long = long_max_bounds;
             // }
 
-                publisher_motors->publish(message_motors);
             corner = 1;
             t_lat = lat_max_bounds;
             t_long = long_max_bounds;
-            while ((iterate == 0) && (feedback_replacement == 0))
+            while (iterate == 0 && feedback_replacement == 0)
             {
+                
+                
                 message_motors.data = "data,getOrientation";
                 publisher_motors->publish(message_motors);
                 usleep(0.5 * microsecond);
                 
+                
+
                 message_motors.data = "data,sendGPS";
                 publisher_motors->publish(message_motors);
                 usleep(0.5 * microsecond);
+                
                 current_lat = imu_command_gps(gps_string,1);
                 current_long = imu_command_gps(gps_string,2);
 
@@ -539,7 +520,7 @@ private:
                 //*********************************************************************************
                 //OpenCV SHIT
                 //*********************************************************************************
-                     cv::VideoCapture inputVideo("/dev/video10");
+                    cv::VideoCapture inputVideo("/dev/video10");
                 cv::Mat camMatrix, distCoeffs;
                 
                 
@@ -573,52 +554,51 @@ private:
                 
                 
                 
-                // while (inputVideo.grab()) 
-                // {
-                //     iterateIT ++;
-                //     // std::cout << "Attempt " << iterateIT << std::endl;
-                //     cv::Mat image, imageCopy;
-                //     inputVideo.retrieve(image);
+                while (inputVideo.grab()) 
+                {
+                    iterateIT ++;
+                    // std::cout << "Attempt " << iterateIT << std::endl;
+                    cv::Mat image, imageCopy;
+                    inputVideo.retrieve(image);
                     
-                //     cv::resize(image, imageCopy, cv::Size(640, 480), 0, 0, cv::INTER_AREA);
-                //     //cv::namedWindow("out", CV_WINDOW_AUTOSIZE);
-                //     //std::vector<int> ids;
-                //     //std::vector<std::vector<cv::Point2f>> corners, rejected;
-                //     detector.detectMarkers(imageCopy, corners, ids, rejected);
-                //     // if at least one marker detected
-                //     // int debug_iterator = 0;
-                //     if (ids.size() > 0)
-                //     {
-                //         /*
-                //         int Xdebug_aruco = (int)rejected[0][0].x;
-                //         int Ydebug_aruco = (int)rejected[0][0].y;
-                //         std::cout << '{' << Xdebug_aruco << ',' << Ydebug_aruco << '}' << std::endl;
-                //         int Xids = (int)ids[0];
-                //         std::cout << Xids << std::endl;
-                //         */
-                //         //FEEDBACK
-                //         message_feedback.data = "Aruco Tag detected! Homing in";
-                //         publisher_feedback->publish(message_feedback);
-                //         cv::aruco::drawDetectedMarkers(imageCopy, corners, ids);
-                //         std::cout << "Aruco Detected" << std::endl;
-                //         x_coord = (int)corners[0][0].x;
-                //         y_coord = (int)corners[0][0].y;
+                    cv::resize(image, imageCopy, cv::Size(640, 480), 0, 0, cv::INTER_AREA);
+                    //cv::namedWindow("out", CV_WINDOW_AUTOSIZE);
+                    //std::vector<int> ids;
+                    //std::vector<std::vector<cv::Point2f>> corners, rejected;
+                    detector.detectMarkers(imageCopy, corners, ids, rejected);
+                    // if at least one marker detected
+                    // int debug_iterator = 0;
+                    if (ids.size() > 0)
+                    {
+                        /*
+                        int Xdebug_aruco = (int)rejected[0][0].x;
+                        int Ydebug_aruco = (int)rejected[0][0].y;
+                        std::cout << '{' << Xdebug_aruco << ',' << Ydebug_aruco << '}' << std::endl;
+                        int Xids = (int)ids[0];
+                        std::cout << Xids << std::endl;
+                        */
+                        //FEEDBACK
+                        message_feedback.data = "Aruco Tag detected! Homing in";
+                        publisher_feedback->publish(message_feedback);
+                        cv::aruco::drawDetectedMarkers(imageCopy, corners, ids);
+                        std::cout << "Aruco Detected" << std::endl;
+                        x_coord = (int)corners[0][0].x;
+                        y_coord = (int)corners[0][0].y;
 
-                //         x2_coord = (int)corners[0][1].x;
-                //         y2_coord = (int)corners[0][1].y;
+                        x2_coord = (int)corners[0][1].x;
+                        y2_coord = (int)corners[0][1].y;
 
-                //         x3_coord = (int)corners[0][2].x;
-                //         y3_coord = (int)corners[0][2].y;
-                                                                                        
-                //         x4_coord = (int)corners[0][3].x;
-                //         y4_coord = (int)corners[0][3].y;
-                //         feedback_replacement++;
-                //         firstFrame = true;
-                        
+                        x3_coord = (int)corners[0][2].x;
+                        y3_coord = (int)corners[0][2].y;
+
+                        x4_coord = (int)corners[0][3].x;
+                        y4_coord = (int)corners[0][3].y;
+                        feedback_replacement++;
+                        firstFrame = true;
+
         
-                //     }
-                //     break;
-                // } 
+                    }
+                }
                 
                 //*********************************************************************************
                 //End OpenCV SHIT
@@ -633,16 +613,13 @@ private:
                     message_feedback.data = "Arrived at corner";
                     publisher_feedback->publish(message_feedback);
                 }
-                if (feedback_replacement > 0)
-                    break;
                 
             }
-            
             iterate = 0;
             corner = 3;
             t_lat = lat_min_bounds;
             t_long = long_min_bounds;
-            while ((iterate == 0) && (feedback_replacement == 0))
+            while (iterate == 0 && feedback_replacement == 0)
             {
                 
                 
@@ -774,7 +751,6 @@ private:
 
         
                     }
-                    break;
                 }
                 //*********************************************************************************
                 //End OpenCV SHIT
@@ -789,15 +765,13 @@ private:
                     message_feedback.data = "Arrived at corner";
                     publisher_feedback->publish(message_feedback);
                     }
-                    if (feedback_replacement > 0)
-                        break;
-                }
                 
+                }
             iterate = 0;
             corner = 4;
             t_lat = lat_min_bounds;
             t_long = long_max_bounds;
-            while ((iterate == 0) && (feedback_replacement == 0))
+            while (iterate == 0 && feedback_replacement == 0)
             {
                 
                 
@@ -929,7 +903,6 @@ private:
 
         
                     }
-                    break;
                 }
                 //*********************************************************************************
                 //End OpenCV SHIT
@@ -944,14 +917,13 @@ private:
                     message_feedback.data = "Arrived at corner";
                     publisher_feedback->publish(message_feedback);
                 }
-                if (feedback_replacement > 0)
-                    break;
+                
             }
             iterate = 0;
             corner = 2;
             t_lat = lat_max_bounds;
             t_long = long_min_bounds;
-            while ((iterate == 0) && (feedback_replacement == 0))
+            while (iterate == 0 && feedback_replacement == 0)
             {
                 
                 
@@ -992,7 +964,7 @@ private:
                 usleep(1.5 * microsecond);
                 
 
-                rover_command = "ctrl,0.0,0.0";  
+                rover_command = "ctrl,0,0";  
                 message_motors.data = rover_command;
                 RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message_motors.data.c_str());
                 publisher_motors->publish(message_motors);
@@ -1083,7 +1055,6 @@ private:
 
         
                     }
-                    break;
                 }
                 //*********************************************************************************
                 //End OpenCV SHIT
@@ -1098,11 +1069,8 @@ private:
                     message_feedback.data = "Arrived at corner";
                     publisher_feedback->publish(message_feedback);
                 }
-                if (feedback_replacement > 0)
-                    break;
                 
             }
-            
             //*************************************************************************************
             // FUCK FUCK FUCK
             //*************************************************************************************
@@ -1187,7 +1155,7 @@ private:
 
       
                 }
-                estAttempts = distanceFromW/1;
+                estAttempts = distanceFromW/2.5;
                  
                 outputVideo.write(imageCopy);
 
@@ -1202,8 +1170,62 @@ private:
                 if (found)
                 {
                     midpoint = (abs(x_coord - x2_coord));
-                    i_needHeading = imu_bearing + ((320 - midpoint) * -0.066875); // -0.046875
-                    
+                    i_needHeading = imu_bearing + ((320 - midpoint) * -0.046875);
+                    // if (abs(320 - midpoint) <= 5)
+                    // {
+                    //     //You chill
+                    //     //FEEDBACK
+                    //     message_feedback.data = "Perfect Heading";
+                    //     publisher_feedback->publish(message_feedback);
+                    // }
+                    // else if (abs(320-midpoint) <= 30)
+                    // {
+                    //     if (midpoint < 320)
+                    //         i_needHeading = imu_bearing - 3;
+                    //     else
+                    //         i_needHeading = imu_bearing + 3;
+
+                    //     if (imu_bearing < 0)
+                    //         imu_bearing = imu_bearing + 360;
+                    //     else if (imu_bearing > 360)
+                    //         imu_bearing = imu_bearing - 360;
+                    //     //FEEDBACK
+                    //     message_feedback.data = "Good Heading";
+                    //     publisher_feedback->publish(message_feedback);
+                    //     message_motors.data = "auto,turningTo,15000," + std::to_string(i_needHeading);
+                    //     publisher_motors->publish(message_motors);
+                    // }
+                    // else if (abs(320-midpoitn) <= 100)
+                    // {
+                    //     if (midpoint < 320)
+                    //         i_needHeading = imu_bearing - 5;
+                    //     else
+                    //         i_needHeading = imu_bearing + 5;
+
+                    //     if (imu_bearing < 0)
+                    //         imu_bearing = imu_bearing + 360;
+                    //     else if (imu_bearing > 360)
+                    //         imu_bearing = imu_bearing - 360;
+                        
+                    //     //FEEDBACK
+                    //     message_feedback.data = "Mediocre Heading";
+                    //     publisher_feedback->publish(message_feedback);
+                    // }
+                    // else if (abs(320-midpoint) <= 200)
+                    // {
+                    //     if (midpoint < 320)
+                    //         i_needHeading = imu_bearing - 10;
+                    //     else
+                    //         i_needHeading = imu_bearing + 10;
+
+                    //     if (imu_bearing < 0)
+                    //         imu_bearing = imu_bearing + 360;
+                    //     else if (imu_bearing > 360)
+                    //         imu_bearing = imu_bearing - 360;
+                    //     //FEEDBACK
+                    //     message_feedback.data = "Poor Heading";
+                    //     publisher_feedback->publish(message_feedback);
+                    // }
 
 
                     message_motors.data = "data,getOrientation";
@@ -1224,7 +1246,7 @@ private:
                     message_feedback.data = range;
                     publisher_feedback->publish(message_feedback);
                     
-                    estAttempts = range/2.0;
+                    estAttempts = range/2.5;
                     
 
                     //FEEDBACK
@@ -1312,41 +1334,18 @@ private:
                     publisher_feedback->publish(message_feedback);
                 }
 
-                for (int g = 0; g < 10 ; g++ )
-                {    
-                    message_motors.data = "led_set,0,0,300";
-                    publisher_motors->publish(message_motors);
-                    
-                    usleep(0.5 * microsecond);
-                    message_motors.data = "led_set,0,0,0";
-                    publisher_motors->publish(message_motors);
-                }        
-                message_motors.data = "led_set,0,0,300";
-                publisher_motors->publish(message_motors);
 
                 
 
 
                 found = false;
                 estAttempts = estAttempts - 1;
-                if (firstFrame && (estAttempts == 0))
+                if (firstFrame && estAttempts == 0)
                     break;
                 //End the Loop
 
             }
-            message_motors.data = "data,sendGPS";
-            publisher_motors->publish(message_motors);
-            usleep(0.75 * microsecond);
             
-            current_lat = imu_command_gps(gps_string,1);
-            current_long = imu_command_gps(gps_string,2);
-
-            //Feedback
-            message_feedback.data = ("Current latitude: '%f' ", current_lat);
-            publisher_feedback->publish(message_feedback);
-            message_feedback.data = ("Current longitude: '%f' ", current_long);
-            publisher_feedback->publish(message_feedback);
-
 
 
 
@@ -1854,7 +1853,7 @@ private:
                 if (found)
                 {
                     midpoint = (abs(x_coord - x2_coord));
-                    i_needHeading = imu_bearing + ((320 - midpoint) * -0.066875);   // -0.046875
+                    i_needHeading = imu_bearing + ((320 - midpoint) * -0.046875);
                     // if (abs(320 - midpoint) <= 5)
                     // {
                     //     //You chill
