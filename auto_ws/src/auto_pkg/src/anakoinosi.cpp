@@ -1,44 +1,42 @@
 //*************************************************************************************************
-// rover-Autonomy Server
-// State machine for ASTRA rover
-// Last edited Sept 9, 2024
+// rover-Autonomy action Server Listener/Subscriber Implementation
+// Last edited Jan 25, 2025
+//*************************************************************************************************
+// Anakoinosi - Communications
 //*************************************************************************************************
 // Maintained by: Daegan Brown
 // Number: 423-475-4384
 // Email: daeganbrown03@gmail.com
 //*************************************************************************************************
-// Includes
+// Includes 
 //*************************************************************************************************
 
+// Prevents double compiling
+#pragma once
+
 // STD Includes
-#include <string>                                       //Gosh I love strings in c++
+#include <memory>                       // DEBUG: This may be unneccesary
 
 // ROS2 Includes
-#include "rclcpp/rclcpp.hpp"                            //Needed for ros2 cpp 
-#include "rclcpp_action/rclcpp_action.hpp"              //Needed for actions, specifically
-#include "clucky_interfaces/action/auto_command.hpp"    //Interfaces
+#include "rclcpp/rclcpp.hpp"            // Needed for ROS2 cpp
+#include "std_msgs/msg/string.hpp"      // 
 
 // Local Includes
-#include "hippocampus.cpp"                              //Class files
+#include "anakoinosi.h"                   // Class definition
 
 //*************************************************************************************************
 // Global Variables
 //*************************************************************************************************
 
-using AutoCommand = clucky_interfaces::action::AutoCommand;
-using AutoCommandGoalHandle = rclcpp_action::ServerGoalHandle<AutoCommand>;
-using namespace std::placeholders;
-
+using std::placeholders::_1;
 
 //*************************************************************************************************
-// Main
+// Functions
 //*************************************************************************************************
 
-int main(int argc, char **argv)
+// Constructor
+Anakoinosi::Anakoinosi(): Node("core_listener")
 {
-    rclcpp::init(argc, argv);
-    auto node = std::make_shared<Hippocampus>();
-    rclcpp::spin(node);
-    rclcpp::shutdown();
-    return 0;
+    subscription_ = this->create_subscription<std_msgs::msg::String>(
+        "/astra/core/feedback", 10, std::bind(&Anakoinosi::topic_callback, this, _1));
 }
