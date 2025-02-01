@@ -10,10 +10,12 @@
 //Includes
 //*************************************************************************************************
 
-#include <memory>                           //
-#include <chrono>                           //
-#include <functional>                       //
-#include <string>                           //
+#pragma once
+
+#include <memory>                           // 
+#include <chrono>                           // 
+#include <functional>                       // 
+#include <string>                           // 
 #include <unistd.h>                         // usleep
 #include <iostream>                         // cout and cin
 #include <cmath>                            // sin, cos, tan2,

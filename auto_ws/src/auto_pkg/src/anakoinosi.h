@@ -22,6 +22,9 @@
 #include "rclcpp/rclcpp.hpp"            // Needed for ROS2 cpp
 #include "std_msgs/msg/string.hpp"      // 
 
+// Local Includes
+#include "anakoinosi.cpp"
+
 //*************************************************************************************************
 // Global Variables
 //*************************************************************************************************
@@ -38,9 +41,12 @@ class Anakoinosi : public rclcpp::Node
         // Constructor
         Anakoinosi();
     private:
-        // Runs when /astra/core/feedback
+        // Runs when /astra/core/feedback updates
         void topic_callback(const std_msgs::msg::String & msg) const;
 
+        void topic_summon();
+
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
 
 };
