@@ -34,6 +34,7 @@ ament_python_install_package(${PROJECT_NAME})
 # Install Python executables
 install(PROGRAMS
   scripts/action_client.py
+  scripts/aruco_detector.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
